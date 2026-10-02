@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: elijays-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: elijays
+      POSTGRES_PASSWORD: elijays
+      POSTGRES_DB: elijays
+    ports:
+      - "5434:5432"
+    volumes:
+      - elijays_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elijays -d elijays"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  elijays_pgdata:

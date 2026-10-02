@@ -1,0 +1,948 @@
+// ELIJAYS Admin — PostgreSQL data model (Admin Concept PDF)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── System ─────────────────────────────────────────────────────────────────
+
+enum RoleKey {
+  OWNER
+  MANAGER
+  CATALOGUE
+  EDITOR
+  SALES
+  STOCK
+  TAILOR
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  name         String
+  passwordHash String    @map("password_hash")
+  role         RoleKey   @default(SALES)
+  active       Boolean   @default(true)
+  lastSignInAt DateTime? @map("last_sign_in_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  sessions         Session[]
+  auditLogs        AuditLog[]       @relation("AuditActor")
+  stockMovements   StockMovement[]
+  appointments     Appointment[]    @relation("AssignedTailor")
+  posts            Post[]
+  reviewsReplied   Review[]         @relation("ReviewReplier")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  entityLabel String? @map("entity_label")
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_log")
+}
+
+model Setting {
+  id        String    @id @default(uuid()) @db.Uuid
+  key       String    @unique
+  value     Json
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("settings")
+}
+
+model Redirect {
+  id        String    @id @default(uuid()) @db.Uuid
+  fromPath  String    @unique @map("from_path")
+  toPath    String    @map("to_path")
+  code      Int       @default(301)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("redirects")
+}
+
+// ─── Catalogue ───────────────────────────────────────────────────────────────
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SOLD_OUT
+  LOW_STOCK
+}
+
+model Category {
+  id          String    @id @default(uuid()) @db.Uuid
+  parentId    String?   @map("parent_id") @db.Uuid
+  name        String
+  slug        String    @unique
+  headline    String?
+  subline     String?
+  ctaLabel    String?   @map("cta_label")
+  ctaHref     String?   @map("cta_href")
+  imageId     String?   @map("image_id") @db.Uuid
+  sortOrder   Int       @default(0) @map("sort_order")
+  enabled     Boolean   @default(true)
+  pageCopy    Json?     @map("page_copy")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  image    MediaAsset? @relation(fields: [imageId], references: [id])
+  products Product[]
+  navItems NavItem[]
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+model Collection {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  products ProductCollection[]
+
+  @@map("collections")
+}
+
+model Product {
+  id           String        @id @default(uuid()) @db.Uuid
+  sku          String        @unique
+  name         String
+  slug         String        @unique
+  shortLine    String?       @map("short_line")
+  description  String?
+  status       ProductStatus @default(DRAFT)
+  categoryId   String?       @map("category_id") @db.Uuid
+  badges       String[]      @default([])
+  occasions    String[]      @default([])
+  fabric       Json?
+  care         Json?
+  seoTitle     String?       @map("seo_title")
+  seoDescription String?     @map("seo_description")
+  priceKes     Int           @map("price_kes")
+  compareAtKes Int?          @map("compare_at_kes")
+  isBestseller Boolean       @default(false) @map("is_bestseller")
+  isBespoke    Boolean       @default(false) @map("is_bespoke")
+  publishedAt  DateTime?     @map("published_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  deletedAt    DateTime?     @map("deleted_at")
+
+  category     Category?           @relation(fields: [categoryId], references: [id])
+  variants     ProductVariant[]
+  images       ProductImage[]
+  collections  ProductCollection[]
+  lookProducts CompleteLookItem[]
+  postLinks    PostProduct[]
+  reviewLinks  Review[]
+  wishlistItems WishlistItem[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@map("products")
+}
+
+model ProductVariant {
+  id        String    @id @default(uuid()) @db.Uuid
+  productId String    @map("product_id") @db.Uuid
+  sku       String    @unique
+  colour    String?
+  size      String?
+  priceKes  Int?      @map("price_kes")
+  barcode   String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  product      Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  stockLevels  StockLevel[]
+  orderItems   OrderItem[]
+  movements    StockMovement[]
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+model ProductImage {
+  id        String    @id @default(uuid()) @db.Uuid
+  productId String    @map("product_id") @db.Uuid
+  mediaId   String    @map("media_id") @db.Uuid
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  product Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  media   MediaAsset @relation(fields: [mediaId], references: [id])
+
+  @@index([productId])
+  @@map("product_images")
+}
+
+model ProductCollection {
+  productId    String @map("product_id") @db.Uuid
+  collectionId String @map("collection_id") @db.Uuid
+
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([productId, collectionId])
+  @@map("product_collections")
+}
+
+model CompleteLookItem {
+  id        String @id @default(uuid()) @db.Uuid
+  lookKey   String @map("look_key")
+  productId String @map("product_id") @db.Uuid
+  sortOrder Int    @default(0) @map("sort_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("complete_look_items")
+}
+
+model Fabric {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  composition String?
+  colour      String?
+  origin      String?
+  pricePerM   Int?      @map("price_per_m")
+  swatchUrl   String?   @map("swatch_url")
+  inStock     Boolean   @default(true) @map("in_stock")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@map("fabrics")
+}
+
+model Attribute {
+  id        String    @id @default(uuid()) @db.Uuid
+  key       String
+  label     String
+  values    String[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([key])
+  @@map("attributes")
+}
+
+// ─── Inventory ───────────────────────────────────────────────────────────────
+
+model Location {
+  id        String    @id @default(uuid()) @db.Uuid
+  code      String    @unique
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  stockLevels StockLevel[]
+  movementsFrom StockMovement[] @relation("MoveFrom")
+  movementsTo   StockMovement[] @relation("MoveTo")
+
+  @@map("locations")
+}
+
+model StockLevel {
+  id          String    @id @default(uuid()) @db.Uuid
+  variantId   String    @map("variant_id") @db.Uuid
+  locationId  String    @map("location_id") @db.Uuid
+  quantity    Int       @default(0)
+  reserved    Int       @default(0)
+  alertAt     Int       @default(2) @map("alert_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  variant  ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  location Location       @relation(fields: [locationId], references: [id])
+
+  @@unique([variantId, locationId])
+  @@map("stock_levels")
+}
+
+enum MovementType {
+  RECEIVE
+  SALE
+  TRANSFER
+  ADJUST
+  RESERVE
+  RELEASE
+  RETURN
+}
+
+model StockMovement {
+  id           String       @id @default(uuid()) @db.Uuid
+  variantId    String       @map("variant_id") @db.Uuid
+  fromLocationId String?    @map("from_location_id") @db.Uuid
+  toLocationId   String?    @map("to_location_id") @db.Uuid
+  quantity     Int
+  type         MovementType
+  reason       String?
+  reference    String?
+  actorId      String?      @map("actor_id") @db.Uuid
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  deletedAt    DateTime?    @map("deleted_at")
+
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  fromLocation Location?      @relation("MoveFrom", fields: [fromLocationId], references: [id])
+  toLocation   Location?      @relation("MoveTo", fields: [toLocationId], references: [id])
+  actor        User?          @relation(fields: [actorId], references: [id])
+
+  @@index([variantId])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+// ─── Orders ──────────────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  NEW
+  PAID
+  PREPARING
+  ALTERATION
+  OUT_FOR_DELIVERY
+  DELIVERED
+  COLLECTED
+  CANCELLED
+  REFUNDED
+  ABANDONED
+}
+
+enum OrderChannel {
+  WEBSITE
+  SHOP
+  WHATSAPP
+  PHONE
+}
+
+enum PaymentMethod {
+  MPESA
+  CARD
+  CASH
+  PAY_ON_DELIVERY
+  PENDING
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Order {
+  id            String       @id @default(uuid()) @db.Uuid
+  number        Int          @unique @default(autoincrement())
+  customerId    String?      @map("customer_id") @db.Uuid
+  status        OrderStatus  @default(NEW)
+  channel       OrderChannel @default(WEBSITE)
+  subtotalKes   Int          @map("subtotal_kes")
+  deliveryKes   Int          @default(0) @map("delivery_kes")
+  totalKes      Int          @map("total_kes")
+  currency      String       @default("KES")
+  deliveryNotes String?      @map("delivery_notes")
+  internalNote  String?      @map("internal_note")
+  addressJson   Json?        @map("address_json")
+  /** Browser checkout session — used to upsert abandoned leads */
+  checkoutToken String?      @unique @map("checkout_token")
+  guestName     String?      @map("guest_name")
+  guestPhone    String?      @map("guest_phone")
+  guestEmail    String?      @map("guest_email")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  deletedAt     DateTime?    @map("deleted_at")
+
+  customer   Customer?           @relation(fields: [customerId], references: [id])
+  items      OrderItem[]
+  payments   Payment[]
+  shipments  Shipment[]
+  alterations AlterationRequest[]
+  returns    Return[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String    @id @default(uuid()) @db.Uuid
+  orderId   String    @map("order_id") @db.Uuid
+  variantId String?   @map("variant_id") @db.Uuid
+  name      String
+  size      String?
+  colour    String?
+  qty       Int       @default(1)
+  unitKes   Int       @map("unit_kes")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  order       Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant     ProductVariant?     @relation(fields: [variantId], references: [id])
+  alterations AlterationRequest[]
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Payment {
+  id          String        @id @default(uuid()) @db.Uuid
+  orderId     String        @map("order_id") @db.Uuid
+  method      PaymentMethod @default(PENDING)
+  status      PaymentStatus @default(PENDING)
+  amountKes   Int           @map("amount_kes")
+  mpesaReceipt String?      @map("mpesa_receipt")
+  providerRef String?       @map("provider_ref")
+  paidAt      DateTime?     @map("paid_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  deletedAt   DateTime?     @map("deleted_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("payments")
+}
+
+model Shipment {
+  id          String    @id @default(uuid()) @db.Uuid
+  orderId     String    @map("order_id") @db.Uuid
+  carrier     String?
+  tracking    String?
+  status      String    @default("pending")
+  deliveredAt DateTime? @map("delivered_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("shipments")
+}
+
+model AlterationRequest {
+  id          String    @id @default(uuid()) @db.Uuid
+  orderId     String    @map("order_id") @db.Uuid
+  orderItemId String?   @map("order_item_id") @db.Uuid
+  notes       String
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
+
+  @@map("alteration_requests")
+}
+
+model Return {
+  id        String    @id @default(uuid()) @db.Uuid
+  orderId   String    @map("order_id") @db.Uuid
+  reason    String?
+  status    String    @default("requested")
+  amountKes Int?      @map("amount_kes")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("returns")
+}
+
+// ─── Customers ───────────────────────────────────────────────────────────────
+
+model Customer {
+  id         String    @id @default(uuid()) @db.Uuid
+  firstName  String    @map("first_name")
+  lastName   String    @map("last_name")
+  email      String?
+  phone      String?
+  tags       String[]  @default([])
+  notes      String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  addresses     Address[]
+  measurements  Measurement[]
+  wishlists     WishlistItem[]
+  consents      Consent[]
+  privateList   PrivateListEntry?
+  orders        Order[]
+  appointments  Appointment[]
+  bespokeRequests BespokeRequest[]
+  reviews       Review[]
+
+  @@index([phone])
+  @@index([email])
+  @@map("customers")
+}
+
+model Address {
+  id         String    @id @default(uuid()) @db.Uuid
+  customerId String    @map("customer_id") @db.Uuid
+  label      String?
+  line1      String
+  line2      String?
+  city       String    @default("Nairobi")
+  landmark   String?
+  isDefault  Boolean   @default(false) @map("is_default")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Measurement {
+  id         String    @id @default(uuid()) @db.Uuid
+  customerId String    @map("customer_id") @db.Uuid
+  jacket     String?
+  shirt      String?
+  waist      String?
+  inseam     String?
+  extras     Json?
+  takenAt    DateTime  @default(now()) @map("taken_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("measurements")
+}
+
+model WishlistItem {
+  id         String    @id @default(uuid()) @db.Uuid
+  customerId String    @map("customer_id") @db.Uuid
+  productId  String    @map("product_id") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, productId])
+  @@map("wishlists")
+}
+
+model Consent {
+  id         String    @id @default(uuid()) @db.Uuid
+  customerId String    @map("customer_id") @db.Uuid
+  kind       String
+  granted    Boolean
+  source     String?
+  grantedAt  DateTime  @default(now()) @map("granted_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("consents")
+}
+
+model PrivateListEntry {
+  id         String    @id @default(uuid()) @db.Uuid
+  customerId String?   @unique @map("customer_id") @db.Uuid
+  phone      String    @unique
+  source     String?
+  consentAt  DateTime  @default(now()) @map("consent_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id])
+
+  @@map("private_list")
+}
+
+// ─── Content ─────────────────────────────────────────────────────────────────
+
+model MediaAsset {
+  id         String    @id @default(uuid()) @db.Uuid
+  filename   String
+  url        String
+  alt        String?
+  mimeType   String?   @map("mime_type")
+  bytes      Int?
+  width      Int?
+  height     Int?
+  usageCount Int       @default(0) @map("usage_count")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  productImages ProductImage[]
+  categories    Category[]
+  posts         Post[]
+  pageSections  PageSection[]
+  banners       Banner[]
+
+  @@map("media_assets")
+}
+
+model NavItem {
+  id          String    @id @default(uuid()) @db.Uuid
+  categoryId  String?   @map("category_id") @db.Uuid
+  parentId    String?   @map("parent_id") @db.Uuid
+  label       String
+  descriptor  String?
+  href        String
+  sortOrder   Int       @default(0) @map("sort_order")
+  enabled     Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  parent   NavItem?  @relation("NavTree", fields: [parentId], references: [id])
+  children NavItem[] @relation("NavTree")
+
+  @@map("nav_items")
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  BIN
+}
+
+model Post {
+  id          String     @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String     @unique
+  excerpt     String?
+  body        String     @default("")
+  status      PostStatus @default(DRAFT)
+  category    String?
+  coverId     String?    @map("cover_id") @db.Uuid
+  authorId    String?    @map("author_id") @db.Uuid
+  seoTitle    String?    @map("seo_title")
+  seoDescription String? @map("seo_description")
+  views       Int        @default(0)
+  scheduledAt DateTime?  @map("scheduled_at")
+  publishedAt DateTime?  @map("published_at")
+  revisions   Json       @default("[]")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  deletedAt   DateTime?  @map("deleted_at")
+
+  cover   MediaAsset?  @relation(fields: [coverId], references: [id])
+  author  User?        @relation(fields: [authorId], references: [id])
+  tags    PostTag[]
+  products PostProduct[]
+
+  @@map("posts")
+}
+
+model PostTag {
+  id     String @id @default(uuid()) @db.Uuid
+  postId String @map("post_id") @db.Uuid
+  tag    String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tag])
+  @@map("post_tags")
+}
+
+model PostProduct {
+  postId    String @map("post_id") @db.Uuid
+  productId String @map("product_id") @db.Uuid
+
+  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([postId, productId])
+  @@map("post_products")
+}
+
+model Page {
+  id        String    @id @default(uuid()) @db.Uuid
+  key       String    @unique
+  title     String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  sections PageSection[]
+
+  @@map("pages")
+}
+
+model PageSection {
+  id        String    @id @default(uuid()) @db.Uuid
+  pageId    String    @map("page_id") @db.Uuid
+  key       String
+  title     String?
+  enabled   Boolean   @default(true)
+  sortOrder Int       @default(0) @map("sort_order")
+  content   Json      @default("{}")
+  mediaId   String?   @map("media_id") @db.Uuid
+  showFrom  DateTime? @map("show_from")
+  showUntil DateTime? @map("show_until")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  page  Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  media MediaAsset? @relation(fields: [mediaId], references: [id])
+
+  @@index([pageId])
+  @@map("page_sections")
+}
+
+model Faq {
+  id        String    @id @default(uuid()) @db.Uuid
+  question  String
+  answer    String
+  category  String?
+  sortOrder Int       @default(0) @map("sort_order")
+  published Boolean   @default(true)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("faqs")
+}
+
+model Testimonial {
+  id        String    @id @default(uuid()) @db.Uuid
+  quote     String
+  role      String?
+  published Boolean   @default(true)
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("testimonials")
+}
+
+model Banner {
+  id        String    @id @default(uuid()) @db.Uuid
+  message   String
+  href      String?
+  enabled   Boolean   @default(true)
+  sortOrder Int       @default(0) @map("sort_order")
+  mediaId   String?   @map("media_id") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  media MediaAsset? @relation(fields: [mediaId], references: [id])
+
+  @@map("banners")
+}
+
+model Policy {
+  id        String    @id @default(uuid()) @db.Uuid
+  key       String    @unique
+  title     String
+  body      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("policies")
+}
+
+// ─── Service ─────────────────────────────────────────────────────────────────
+
+enum AppointmentStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  DECLINED
+}
+
+model Appointment {
+  id          String            @id @default(uuid()) @db.Uuid
+  customerId  String?           @map("customer_id") @db.Uuid
+  tailorId    String?           @map("tailor_id") @db.Uuid
+  title       String
+  startsAt    DateTime          @map("starts_at")
+  endsAt      DateTime?         @map("ends_at")
+  status      AppointmentStatus @default(REQUESTED)
+  notes       String?
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  deletedAt   DateTime?         @map("deleted_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id])
+  tailor   User?     @relation("AssignedTailor", fields: [tailorId], references: [id])
+
+  @@index([startsAt])
+  @@map("appointments")
+}
+
+enum BespokeStatus {
+  NEW
+  DEPOSIT_PENDING
+  DEPOSIT_PAID
+  IN_PROGRESS
+  READY
+  DECLINED
+}
+
+model BespokeRequest {
+  id          String        @id @default(uuid()) @db.Uuid
+  customerId  String?       @map("customer_id") @db.Uuid
+  summary     String
+  details     String?
+  status      BespokeStatus @default(NEW)
+  depositKes  Int?          @map("deposit_kes")
+  fabricId    String?       @map("fabric_id") @db.Uuid
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  deletedAt   DateTime?     @map("deleted_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id])
+
+  @@map("bespoke_requests")
+}
+
+model FabricSwatch {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  code        String?
+  colour      String?
+  composition String?
+  imageUrl    String?   @map("image_url")
+  inLibrary   Boolean   @default(true) @map("in_library")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@map("fabric_swatches")
+}
+
+// ─── Marketing ───────────────────────────────────────────────────────────────
+
+model DiscountCode {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    @unique
+  offer       String
+  percentOff  Int?      @map("percent_off")
+  amountOff   Int?      @map("amount_off")
+  usedCount   Int       @default(0) @map("used_count")
+  status      String    @default("ACTIVE")
+  startsAt    DateTime? @map("starts_at")
+  endsAt      DateTime? @map("ends_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@map("discount_codes")
+}
+
+model GiftCard {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    @unique
+  balanceKes  Int       @map("balance_kes")
+  initialKes  Int       @map("initial_kes")
+  status      String    @default("ACTIVE")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@map("gift_cards")
+}
+
+model Announcement {
+  id        String    @id @default(uuid()) @db.Uuid
+  message   String
+  enabled   Boolean   @default(true)
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("announcements")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  HIDDEN
+}
+
+model Review {
+  id         String       @id @default(uuid()) @db.Uuid
+  productId  String?      @map("product_id") @db.Uuid
+  customerId String?      @map("customer_id") @db.Uuid
+  authorName String       @map("author_name")
+  rating     Int
+  body       String
+  status     ReviewStatus @default(PENDING)
+  reply      String?
+  repliedById String?     @map("replied_by_id") @db.Uuid
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  deletedAt  DateTime?    @map("deleted_at")
+
+  product  Product?  @relation(fields: [productId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
+  repliedBy User?    @relation("ReviewReplier", fields: [repliedById], references: [id])
+
+  @@map("reviews")
+}

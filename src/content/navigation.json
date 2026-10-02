@@ -1,0 +1,630 @@
+{
+  "announcements": [
+    {
+      "id": "delivery",
+      "text": "Free Nairobi delivery"
+    },
+    {
+      "id": "alterations",
+      "text": "Free in-store alterations"
+    },
+    {
+      "id": "whatsapp",
+      "text": "WhatsApp 0708 269209 · Mon–Sat 8am–8pm"
+    }
+  ],
+  "secondary": {
+    "bespoke": {
+      "label": "Bespoke",
+      "href": "/bespoke",
+      "lead": "Made for one man. Cut for you."
+    },
+    "visit": {
+      "label": "Visit Us",
+      "href": "/visit"
+    },
+    "whatsapp": {
+      "label": "WhatsApp a Stylist",
+      "messageTemplate": "Hello ELIJAYS. I am on {page} and would like to speak with a stylist."
+    },
+    "search": {
+      "label": "Search",
+      "href": "/search"
+    },
+    "account": {
+      "label": "Account",
+      "href": "/account"
+    },
+    "wishlist": {
+      "label": "Wishlist",
+      "href": "/wishlist"
+    },
+    "bag": {
+      "label": "Bag",
+      "href": "/bag"
+    }
+  },
+  "primary": [
+    {
+      "id": "suits",
+      "enabled": true,
+      "label": "Suits",
+      "slug": "/suits",
+      "headline": "Be read before you speak.",
+      "subline": "A suit is the first sentence you say in any room.",
+      "cta": {
+        "label": "Book a suit fitting",
+        "href": "/bespoke"
+      },
+      "image": {
+        "src": "/hero/hero-model.webp",
+        "alt": "Man in a navy suit at ELIJAYS",
+        "width": 986,
+        "height": 1000
+      },
+      "page": {
+        "h1": "Suits",
+        "subline": "Cut to carry authority.",
+        "intro": "Fine cloth, structured shoulders, a line that settles a room before you speak. Every suit comes with free in-store alterations, and anything not on the rail can be made for you.",
+        "seo": "ELIJAYS Men's Wear on Kimathi Street stocks suits for men who need presence in Nairobi boardrooms, courtrooms and wedding rooms. Choose two-piece, three-piece, blazer, tuxedo or wedding cuts, then finish the fit with free in-store alterations. Prefer a private cut? Book a bespoke fitting and we will measure, cloth and build the suit for you alone. Shop online, reserve to try, or walk in at the Muindi Mbingu junction.",
+        "metaTitle": "Suits for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#suits"
+      },
+      "links": [
+        {
+          "label": "Shop all suits",
+          "descriptor": "Every cut on the rail.",
+          "href": "/suits"
+        },
+        {
+          "label": "Two-Piece Suits",
+          "descriptor": "The standard of the boardroom.",
+          "href": "/suits/two-piece",
+          "image": {
+            "src": "/products/suits.webp",
+            "alt": "Charcoal two-piece suit",
+            "width": 760,
+            "height": 950
+          }
+        },
+        {
+          "label": "Three-Piece Suits",
+          "descriptor": "Added authority, waistcoat included.",
+          "href": "/suits/three-piece",
+          "image": {
+            "src": "/products/wa-001.webp",
+            "alt": "Black three-piece suit",
+            "width": 760,
+            "height": 950
+          }
+        },
+        {
+          "label": "Blazers and Sport Coats",
+          "descriptor": "Command without the full suit.",
+          "href": "/suits/blazers"
+        },
+        {
+          "label": "Tuxedos and Evening",
+          "descriptor": "For rooms with a dress code and a guest list.",
+          "href": "/suits/tuxedos",
+          "image": {
+            "src": "/products/wa-003.webp",
+            "alt": "Black tuxedo",
+            "width": 760,
+            "height": 950
+          }
+        },
+        {
+          "label": "Wedding and Groomsmen",
+          "descriptor": "The groom, and the men beside him.",
+          "href": "/suits/wedding"
+        },
+        {
+          "label": "Bespoke Suits",
+          "descriptor": "Cut to your measure.",
+          "href": "/bespoke"
+        }
+      ]
+    },
+    {
+      "id": "shirts",
+      "enabled": true,
+      "label": "Shirts",
+      "slug": "/shirts",
+      "headline": "They notice the collar first.",
+      "subline": "The shirt is where care becomes visible.",
+      "cta": {
+        "label": "Find your shirt",
+        "href": "/shirts"
+      },
+      "image": {
+        "src": "/products/presidential-shirts.webp",
+        "alt": "White shirt with burgundy tie look",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Shirts",
+        "subline": "The widest shirt room in town.",
+        "intro": "Choose the family first, then the cloth. Dress shirts, Oxfords, linen and statement prints, each one chosen for the room.",
+        "seo": "Find shirts at ELIJAYS Men's Wear in Nairobi. Formal dress shirts, Oxford button-downs, linen, paisley and evening shirts are arranged by family so you choose with intent. Every shirt is authentic. Pair with free alterations, WhatsApp ordering and same-day Nairobi delivery when available. Visit Kimathi Street at Muindi Mbingu, or shop the full shirt room online.",
+        "metaTitle": "Shirts for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#shirts"
+      },
+      "links": [
+        {
+          "label": "Shop all shirts",
+          "descriptor": "Every family, one door.",
+          "href": "/shirts"
+        },
+        {
+          "label": "Formal Dress Shirts",
+          "descriptor": "Spread collar, French cuff.",
+          "href": "/shirts/formal"
+        },
+        {
+          "label": "Oxford Button-Down",
+          "descriptor": "The everyday command shirt.",
+          "href": "/shirts/oxford",
+          "image": {
+            "src": "/hero/hero-shirts.webp",
+            "alt": "Ivory Oxford button-down",
+            "width": 760,
+            "height": 950
+          }
+        },
+        {
+          "label": "Printed and Paisley",
+          "descriptor": "For the man who wants to be noticed, once.",
+          "href": "/shirts/printed",
+          "image": {
+            "src": "/products/wa-023.webp",
+            "alt": "Brown paisley shirt",
+            "width": 760,
+            "height": 950
+          }
+        },
+        {
+          "label": "Linen and Summer",
+          "descriptor": "Composed in the heat.",
+          "href": "/shirts/linen"
+        },
+        {
+          "label": "Casual Long-Sleeve",
+          "descriptor": "Relaxed, never careless.",
+          "href": "/shirts/casual"
+        },
+        {
+          "label": "Evening and Tuxedo Shirts",
+          "descriptor": "Wing collar, pleated front.",
+          "href": "/shirts/evening"
+        }
+      ]
+    },
+    {
+      "id": "polos",
+      "enabled": true,
+      "label": "Polos",
+      "slug": "/polos",
+      "headline": "Relaxed is not unprepared.",
+      "subline": "The weekend look that still holds the room.",
+      "cta": {
+        "label": "Shop the weekend look",
+        "href": "/polos"
+      },
+      "image": {
+        "src": "/products/polo-white.webp",
+        "alt": "White knit polo, weekend look placeholder",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Polos",
+        "subline": "Relaxed, never careless.",
+        "intro": "For the days that call for ease and still need presence. Knit and piqué polos that look decided on their own or under a blazer.",
+        "seo": "Shop men's polos at ELIJAYS on Kimathi Street, Nairobi. Knit, piqué, striped and long-sleeve polos are cut for weekends that still require presence. Wear alone or under a blazer. free alterations where needed, and WhatsApp ordering for a fast reserve. Visit the house or shop the weekend look online.",
+        "metaTitle": "Polos for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#shirts"
+      },
+      "links": [
+        {
+          "label": "Shop all polos",
+          "descriptor": "The full weekend rack.",
+          "href": "/polos"
+        },
+        {
+          "label": "Knit Polos",
+          "descriptor": "Texture with restraint.",
+          "href": "/polos/knit"
+        },
+        {
+          "label": "Piqué Polos",
+          "descriptor": "The classic, cut cleanly.",
+          "href": "/polos/pique"
+        },
+        {
+          "label": "Striped Polos",
+          "descriptor": "Quiet pattern, clear intent.",
+          "href": "/polos/striped"
+        },
+        {
+          "label": "Long-Sleeve Polos",
+          "descriptor": "A layer that looks decided.",
+          "href": "/polos/long-sleeve"
+        },
+        {
+          "label": "Polo under a Blazer",
+          "descriptor": "Smart-casual, handled.",
+          "href": "/lookbook#weekend"
+        }
+      ]
+    },
+    {
+      "id": "trousers",
+      "enabled": true,
+      "label": "Trousers",
+      "slug": "/trousers",
+      "headline": "The line from waist to shoe.",
+      "subline": "What you stand in matters as much as what you wear above it.",
+      "cta": {
+        "label": "Get the break right",
+        "href": "/trousers"
+      },
+      "image": {
+        "src": "/products/formal-trousers.webp",
+        "alt": "Navy tailored trouser look",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Trousers",
+        "subline": "The line from waist to shoe.",
+        "intro": "Tailored, flannel and dress black. We hem them free in-store while you wait, so the break is right the first time.",
+        "seo": "Tailored trousers and dress black for men in Nairobi at ELIJAYS Men's Wear. Suit separates, wool, flannel and smart casual cuts are hemmed free in-store while you wait. Tailored cloth, Kimathi Street fittings, and WhatsApp reserves. Build the lower half of the outfit with the same care as the jacket above it.",
+        "metaTitle": "Trousers for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#trousers"
+      },
+      "links": [
+        {
+          "label": "Shop all trousers",
+          "descriptor": "Every break, every cut.",
+          "href": "/trousers"
+        },
+        {
+          "label": "Tailored Trousers",
+          "descriptor": "Suit separates, flat or pleated.",
+          "href": "/trousers/tailored"
+        },
+        {
+          "label": "Dress Black",
+          "descriptor": "For evenings that matter.",
+          "href": "/trousers/dress-black"
+        },
+        {
+          "label": "Smart Casual",
+          "descriptor": "Tapered, comfortable, composed.",
+          "href": "/trousers/smart-casual"
+        },
+        {
+          "label": "Wool and Flannel",
+          "descriptor": "Weight with movement.",
+          "href": "/trousers/wool-flannel"
+        },
+        {
+          "label": "Hem it free",
+          "descriptor": "Altered in-store while you wait.",
+          "href": "/visit"
+        }
+      ]
+    },
+    {
+      "id": "khakis",
+      "enabled": true,
+      "label": "Khakis",
+      "slug": "/khakis",
+      "headline": "Stone, sand, and quiet authority.",
+      "subline": "The easiest way to look in charge without trying.",
+      "cta": {
+        "label": "Build the look",
+        "href": "/khakis"
+      },
+      "image": {
+        "src": "/products/khakitrouser.webp",
+        "alt": "White Oxford with stone khaki look",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Khakis and Chinos",
+        "subline": "Stone, sand, quiet authority.",
+        "intro": "The staple that works with a Oxford, a knit or a blazer. Choose your colour and your cut.",
+        "seo": "Stone khaki and chino trousers for men at ELIJAYS Men's Wear, Nairobi. Navy, olive and earth tones in slim taper or straight fits pair with Oxfords, knits and blazers. Pieces from the house, free hemming in-store, and easy WhatsApp ordering from Kimathi Street.",
+        "metaTitle": "Khakis for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#trousers"
+      },
+      "links": [
+        {
+          "label": "Shop all khakis and chinos",
+          "descriptor": "Stone to navy, every cut.",
+          "href": "/khakis"
+        },
+        {
+          "label": "Stone Khaki",
+          "descriptor": "The staple.",
+          "href": "/khakis/stone"
+        },
+        {
+          "label": "Navy Chino",
+          "descriptor": "Smart, endlessly versatile.",
+          "href": "/khakis/navy"
+        },
+        {
+          "label": "Olive and Earth Tones",
+          "descriptor": "Depth without noise.",
+          "href": "/khakis/olive"
+        },
+        {
+          "label": "Slim Taper",
+          "descriptor": "Modern and close.",
+          "href": "/khakis/slim-taper"
+        },
+        {
+          "label": "Straight Fit",
+          "descriptor": "Classic and easy.",
+          "href": "/khakis/straight"
+        }
+      ]
+    },
+    {
+      "id": "jeans",
+      "enabled": true,
+      "label": "Jeans",
+      "slug": "/jeans",
+      "headline": "Denim, dressed up.",
+      "subline": "Dark, clean, and cut to sit beside a blazer.",
+      "cta": {
+        "label": "Shop denim",
+        "href": "/jeans"
+      },
+      "image": {
+        "src": "/products/jeans.webp",
+        "alt": "White Oxford with dark denim and rolled hem look",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Jeans",
+        "subline": "Denim, dressed up.",
+        "intro": "Dark, clean and cut to sit beside a jacket. Rolled or hemmed to break exactly where you want it.",
+        "seo": "Dark indigo, slim, straight and black jeans for men who dress denim up at ELIJAYS, Nairobi. Clean finishes pair with Oxfords, belts and blazers. Denim from the house, free hemming, Kimathi Street fittings and WhatsApp reserves. Denim, handled with the same care as the rest of the wardrobe.",
+        "metaTitle": "Jeans for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#jeans"
+      },
+      "links": [
+        {
+          "label": "Shop all jeans",
+          "descriptor": "Every wash, every cut.",
+          "href": "/jeans"
+        },
+        {
+          "label": "Dark Indigo and Raw",
+          "descriptor": "Rolled hem, clean finish.",
+          "href": "/jeans/raw-dark"
+        },
+        {
+          "label": "Slim and Tapered",
+          "descriptor": "Modern line.",
+          "href": "/jeans/slim"
+        },
+        {
+          "label": "Straight",
+          "descriptor": "Classic and settled.",
+          "href": "/jeans/straight"
+        },
+        {
+          "label": "Black and Charcoal",
+          "descriptor": "Evening denim.",
+          "href": "/jeans/black-grey"
+        },
+        {
+          "label": "Pair with a Blazer",
+          "descriptor": "See the look.",
+          "href": "/lookbook#open-collar"
+        }
+      ]
+    },
+    {
+      "id": "outerwear",
+      "enabled": true,
+      "label": "Outerwear",
+      "slug": "/outerwear",
+      "headline": "The layer people see first.",
+      "subline": "Arrive in something that was chosen.",
+      "cta": {
+        "label": "Shop outerwear",
+        "href": "/outerwear"
+      },
+      "image": {
+        "src": "/products/jackets-outer.webp",
+        "alt": "Charcoal suede jacket on mannequin",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Outerwear",
+        "subline": "The layer people see first.",
+        "intro": "Leather, suede, wool and quilted pieces chosen to finish an outfit, not hide it.",
+        "seo": "Leather, suede, overcoats, trenches and quilted vests at ELIJAYS Men's Wear on Kimathi Street. Outerwear that finishes the outfit you already own. Jackets from the house, Nairobi fittings, free alterations where needed, and WhatsApp ordering. Arrive in something that was chosen.",
+        "metaTitle": "Outerwear for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#outerwear"
+      },
+      "links": [
+        {
+          "label": "Shop all outerwear",
+          "descriptor": "Every layer on the rail.",
+          "href": "/outerwear"
+        },
+        {
+          "label": "Leather and Suede",
+          "descriptor": "Biker, café, bomber.",
+          "href": "/outerwear/leather-suede"
+        },
+        {
+          "label": "Quilted Vests",
+          "descriptor": "Layers with structure.",
+          "href": "/outerwear/quilted-vests",
+          "image": {
+            "src": "/products/wa-005.webp",
+            "alt": "Brown quilted vest with paisley shirt",
+            "width": 760,
+            "height": 950
+          }
+        },
+        {
+          "label": "Overcoats",
+          "descriptor": "Wool, long and short.",
+          "href": "/outerwear/overcoats"
+        },
+        {
+          "label": "Trench and Rain",
+          "descriptor": "Weather, handled.",
+          "href": "/outerwear/trench"
+        },
+        {
+          "label": "Casual Jackets",
+          "descriptor": "Field, denim, harrington.",
+          "href": "/outerwear/casual"
+        }
+      ]
+    },
+    {
+      "id": "knitwear",
+      "enabled": true,
+      "label": "Knitwear",
+      "slug": "/knitwear",
+      "headline": "Warmth with discipline.",
+      "subline": "Texture that sits quietly under a blazer, or stands alone.",
+      "cta": {
+        "label": "See it layered",
+        "href": "/knitwear"
+      },
+      "image": {
+        "src": "/products/sweaters.webp",
+        "alt": "Grey cable knit look",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Knitwear",
+        "subline": "Warmth with discipline.",
+        "intro": "Cable knits and fine gauge crews that sit under tailoring or stand alone.",
+        "seo": "Cable knit, crew neck, quarter-zip, V-neck and cardigan knitwear at ELIJAYS Men's Wear, Nairobi. Texture with discipline for under a blazer or worn alone. Knits from the house, Kimathi Street service, and WhatsApp stylist support. See it layered in the lookbook, then add it to your bag.",
+        "metaTitle": "Knitwear for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#knitwear"
+      },
+      "links": [
+        {
+          "label": "Shop all knitwear",
+          "descriptor": "Every gauge, every neckline.",
+          "href": "/knitwear"
+        },
+        {
+          "label": "Cable Knit",
+          "descriptor": "Heavy texture, deep colour.",
+          "href": "/knitwear/cable-knit"
+        },
+        {
+          "label": "Crew Neck",
+          "descriptor": "Fine gauge, worn under tailoring.",
+          "href": "/knitwear/crew-neck"
+        },
+        {
+          "label": "Quarter-Zip",
+          "descriptor": "Smart casual, travel ready.",
+          "href": "/knitwear/quarter-zip"
+        },
+        {
+          "label": "V-Neck",
+          "descriptor": "Over a shirt and tie.",
+          "href": "/knitwear/v-neck"
+        },
+        {
+          "label": "Cardigans",
+          "descriptor": "Shawl and zip.",
+          "href": "/knitwear/cardigans"
+        }
+      ]
+    },
+    {
+      "id": "accessories",
+      "enabled": true,
+      "label": "Accessories",
+      "slug": "/accessories",
+      "headline": "The details they notice and never mention.",
+      "subline": "Belt, tie, square, sock. This is where care shows.",
+      "cta": {
+        "label": "Finish the look",
+        "href": "/accessories"
+      },
+      "image": {
+        "src": "/hero/hero-gifts.webp",
+        "alt": "Boxed belt and wallet gift set",
+        "width": 760,
+        "height": 950
+      },
+      "page": {
+        "h1": "Accessories",
+        "subline": "The details they notice, and never mention.",
+        "intro": "Belts, wallets, ties, squares and socks. Gift sets arrive boxed and ready.",
+        "seo": "Belts, wallets, ties, pocket squares and socks at ELIJAYS Men's Wear on Kimathi Street. Finish the look with leather and silk, or send a boxed gift set. Corporate gifting for teams and clients is available through a stylist. Shop online or visit Nairobi CBD.",
+        "metaTitle": "Accessories for Men in Nairobi | ELIJAYS Men's Wear",
+        "sizeGuideHref": "/size-guide#belts"
+      },
+      "links": [
+        {
+          "label": "Shop all accessories",
+          "descriptor": "Every finishing piece.",
+          "href": "/accessories"
+        },
+        {
+          "label": "Belts and Wallets",
+          "descriptor": "Leather that matches the shoe.",
+          "href": "/accessories/belts"
+        },
+        {
+          "label": "Ties and Pocket Squares",
+          "descriptor": "Velvet, silk, paisley.",
+          "href": "/accessories/ties",
+          "image": {
+            "src": "/products/ties-acc.webp",
+            "alt": "Teal velvet paisley tie",
+            "width": 760,
+            "height": 950
+          }
+        },
+        {
+          "label": "Socks",
+          "descriptor": "Mid-calf, never slipping.",
+          "href": "/accessories/socks"
+        },
+        {
+          "label": "Gift Sets",
+          "descriptor": "Boxed, ready to give.",
+          "href": "/accessories/gift-sets"
+        },
+        {
+          "label": "Corporate Gifting",
+          "descriptor": "Orders for teams and clients.",
+          "href": "/accessories/corporate"
+        }
+      ]
+    }
+  ],
+  "mobileBar": [
+    { "id": "shop", "label": "Shop", "href": "/suits" },
+    { "id": "search", "label": "Search", "action": "search" },
+    { "id": "bespoke", "label": "Bespoke", "href": "/bespoke" },
+    { "id": "bag", "label": "Bag", "href": "/bag", "showCount": true },
+    { "id": "whatsapp", "label": "WhatsApp", "action": "whatsapp" }
+  ]
+}
