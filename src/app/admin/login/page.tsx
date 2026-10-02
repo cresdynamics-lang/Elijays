@@ -11,9 +11,6 @@ export default function AdminLoginPage() {
             ELIJAYS
           </span>
           <p className="mt-2 text-sm text-ivory-muted">Admin sign in</p>
-          <p className="mt-4 text-[11px] text-ivory-faint">
-            Owner: nehemiah@elijays.co.ke
-          </p>
         </div>
         <LoginForm />
       </div>
