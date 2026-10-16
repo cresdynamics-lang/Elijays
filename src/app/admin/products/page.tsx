@@ -76,7 +76,7 @@ export default async function ProductsPage({
     <div>
       <PageHeader
         title="Products"
-        subtitle="Live catalogue shared with elijays.co.ke"
+        subtitle="Live catalogue shared with elijays-mens-wear.co.ke"
         actionHref="/admin/products/new"
         actionLabel="+ New product"
       />

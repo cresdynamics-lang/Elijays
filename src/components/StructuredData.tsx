@@ -1,4 +1,4 @@
-import { BRAND } from "@/lib/constants";
+import { BRAND, SITE_URL } from "@/lib/constants";
 import { getEnabledCategories } from "@/lib/navigation";
 
 export function StructuredData() {
@@ -8,8 +8,8 @@ export function StructuredData() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: BRAND.fullName,
-    url: "https://elijays.co.ke",
-    logo: "https://elijays.co.ke/brand/elijays-logo-nav.png",
+    url: SITE_URL,
+    logo: `${SITE_URL}/brand/elijays-logo-nav.png`,
     sameAs: [BRAND.instagram],
     contactPoint: {
       "@type": "ContactPoint",
@@ -24,8 +24,8 @@ export function StructuredData() {
     "@context": "https://schema.org",
     "@type": "MensClothingStore",
     name: BRAND.fullName,
-    image: "https://elijays.co.ke/hero/hero-elijays.jpg",
-    url: "https://elijays.co.ke",
+    image: `${SITE_URL}/hero/hero-elijays.jpg`,
+    url: SITE_URL,
     telephone: `+${BRAND.phoneE164}`,
     priceRange: "KES",
     address: {
@@ -60,7 +60,7 @@ export function StructuredData() {
       itemListElement: categories.map((c) => ({
         "@type": "OfferCatalog",
         name: c.label,
-        url: `https://elijays.co.ke${c.slug}`,
+        url: `${SITE_URL}${c.slug}`,
       })),
     },
   };

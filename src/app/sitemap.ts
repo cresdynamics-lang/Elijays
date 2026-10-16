@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/constants";
 import { getEnabledCategories } from "@/lib/navigation";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://elijays.co.ke";
+  const base = SITE_URL;
   const categories = getEnabledCategories();
   const entries: MetadataRoute.Sitemap = [
     { url: base, changeFrequency: "weekly", priority: 1 },

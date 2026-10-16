@@ -546,7 +546,10 @@ async function main() {
       },
       {
         key: "site",
-        value: { url: "https://elijays.co.ke", metaFeed: "https://elijays.co.ke/meta-feeds.csv" },
+        value: {
+          url: "https://elijays-mens-wear.co.ke",
+          metaFeed: "https://elijays-mens-wear.co.ke/meta-feeds.csv",
+        },
       },
     ],
   });

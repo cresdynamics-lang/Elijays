@@ -29,7 +29,9 @@ function hasConsent(): boolean {
   }
 }
 
-const SITE = "https://elijays.co.ke";
+const SITE =
+  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
+  "https://elijays-mens-wear.co.ke";
 
 export function trackMeta(event: MetaEvent): void {
   if (typeof window === "undefined") return;

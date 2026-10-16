@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { ProductStatus } from "@prisma/client";
+import { SITE_URL } from "@/lib/constants";
 
-const SITE = "https://elijays.co.ke";
+const SITE = SITE_URL;
 
 function csvEscape(value: string): string {
   if (/[",\n\r]/.test(value)) {
@@ -13,7 +14,6 @@ function csvEscape(value: string): string {
 
 /**
  * Meta Commerce catalogue feed — all updated/published products.
- * https://elijays.co.ke/meta-feeds.csv
  */
 export async function GET() {
   const products = await prisma.product.findMany({

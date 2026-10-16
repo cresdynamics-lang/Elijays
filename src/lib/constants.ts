@@ -1,3 +1,8 @@
+/** Live storefront domain (elijays.co.ke later; mens-wear until then). */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_APP_URL || "https://elijays-mens-wear.co.ke"
+).replace(/\/$/, "");
+
 export const BRAND = {
   name: "ELIJAYS",
   fullName: "ELIJAYS Men's Wear",

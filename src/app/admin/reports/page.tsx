@@ -46,7 +46,7 @@ export default async function ReportsPage() {
       <div className="report-print-root">
         <div className="mb-2 hidden print:block">
           <p className="font-display text-2xl">ELIJAYS Reports</p>
-          <p className="text-sm text-neutral-600">{generated} · elijays.co.ke</p>
+          <p className="text-sm text-neutral-600">{generated} · elijays-mens-wear.co.ke</p>
         </div>
 
         <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -76,7 +76,7 @@ export default async function ReportsPage() {
           </DataTableBody>
         </DataTable>
         <p className="mt-6 text-sm text-ivory-faint print:text-neutral-600">
-          Meta catalogue feed: https://elijays.co.ke/meta-feeds.csv
+          Meta catalogue feed: https://elijays-mens-wear.co.ke/meta-feeds.csv
         </p>
       </div>
     </div>

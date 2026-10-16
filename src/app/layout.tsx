@@ -9,6 +9,7 @@ import { MobileBar, WhatsAppFab } from "@/components/MobileBar";
 import { StructuredData } from "@/components/StructuredData";
 import { MetaPixel } from "@/components/MetaPixel";
 import { MetaPageView } from "@/components/MetaEvents";
+import { SITE_URL } from "@/lib/constants";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -40,9 +41,9 @@ export const metadata: Metadata = {
     title: "ELIJAYS Men's Wear",
     description: "Command the room before you speak.",
     type: "website",
-    url: "https://elijays.co.ke",
+    url: SITE_URL,
   },
-  metadataBase: new URL("https://elijays.co.ke"),
+  metadataBase: new URL(SITE_URL),
 };
 
 export default async function RootLayout({
