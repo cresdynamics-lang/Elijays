@@ -16,23 +16,36 @@ function hasRealKey(value?: string | null) {
   return true;
 }
 
+function extractJson(raw: string): Partial<AiProductCopy> {
+  const trimmed = raw.trim();
+  try {
+    return JSON.parse(trimmed) as Partial<AiProductCopy>;
+  } catch {
+    const match = trimmed.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("AI returned invalid JSON");
+    return JSON.parse(match[0]) as Partial<AiProductCopy>;
+  }
+}
+
 /**
- * Vision model reads the product photo and returns ELIJAYS storefront copy:
- * persuasive name + SEO description shoppers recognise as “this is the one”.
+ * Groq vision reads the product photo and returns ELIJAYS storefront copy.
+ * Docs: https://console.groq.com/docs/vision
  */
 export async function describeProductFromImage(input: {
   imageBase64: string;
   mimeType: string;
   hint?: string;
 }): Promise<AiProductCopy> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!hasRealKey(apiKey)) {
     throw new Error(
-      "Set OPENAI_API_KEY in .env to enable AI product naming and descriptions.",
+      "Set GROQ_API_KEY in .env to enable AI product naming and descriptions.",
     );
   }
 
-  const model = process.env.OPENAI_VISION_MODEL || "gpt-4o-mini";
+  const model =
+    process.env.GROQ_VISION_MODEL ||
+    "meta-llama/llama-4-scout-17b-16e-instruct";
   const hint = input.hint?.trim();
 
   const system = `You are the merchandising copywriter for ELIJAYS Men's Wear, a Nairobi luxury menswear house (suits, shirts, trousers, jackets, accessories).
@@ -51,7 +64,7 @@ Return ONLY valid JSON with keys: name, shortLine, description, seoTitle, seoDes
     ? `Product photo for ELIJAYS. Merchant hint: ${hint}`
     : "Product photo for ELIJAYS. Infer the garment accurately from the image.";
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -60,6 +73,7 @@ Return ONLY valid JSON with keys: name, shortLine, description, seoTitle, seoDes
     body: JSON.stringify({
       model,
       temperature: 0.55,
+      max_completion_tokens: 1024,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: system },
@@ -81,19 +95,14 @@ Return ONLY valid JSON with keys: name, shortLine, description, seoTitle, seoDes
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(`AI vision failed (${res.status}): ${errText.slice(0, 240)}`);
+    throw new Error(`Groq vision failed (${res.status}): ${errText.slice(0, 240)}`);
   }
 
   const data = (await res.json()) as {
     choices?: { message?: { content?: string } }[];
   };
   const raw = data.choices?.[0]?.message?.content || "{}";
-  let parsed: Partial<AiProductCopy>;
-  try {
-    parsed = JSON.parse(raw) as Partial<AiProductCopy>;
-  } catch {
-    throw new Error("AI returned invalid JSON");
-  }
+  const parsed = extractJson(raw);
 
   const name = String(parsed.name || "").trim();
   if (!name) throw new Error("AI did not return a product name");

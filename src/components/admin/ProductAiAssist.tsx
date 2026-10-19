@@ -97,7 +97,7 @@ export function ProductAiAssist({ productId }: { productId: string }) {
                 ? "Fields updated — review and save."
                 : status === "error"
                   ? error
-                  : "Uses OPENAI_API_KEY on the server."}
+                  : "Uses GROQ_API_KEY on the server."}
           </p>
         </div>
       </div>

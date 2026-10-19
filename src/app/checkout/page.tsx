@@ -126,7 +126,7 @@ export default function CheckoutPage() {
       ticks += 1;
       try {
         const res = await fetch(
-          `/api/payments/mpesa/status?paymentId=${encodeURIComponent(paymentId)}`,
+          `/api/payments/coop/status?paymentId=${encodeURIComponent(paymentId)}`,
         );
         const data = await res.json();
         if (data.status === "PAID") {
@@ -158,7 +158,7 @@ export default function CheckoutPage() {
     if (pay === "mpesa") {
       setPaying(true);
       try {
-        const res = await fetch("/api/payments/mpesa/stk", {
+        const res = await fetch("/api/payments/coop/stk", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -169,11 +169,11 @@ export default function CheckoutPage() {
         });
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Could not start M-Pesa");
+          throw new Error(data.error || "Could not start Co-op payment");
         }
         setStkMessage(
           data.customerMessage ||
-            "Check your phone and enter your M-Pesa PIN to complete payment.",
+            "Check your phone and enter your PIN to complete payment.",
         );
         pollPayment(data.paymentId);
       } catch (err) {
@@ -284,7 +284,7 @@ export default function CheckoutPage() {
             <div className="flex flex-wrap gap-3">
               {(
                 [
-                  ["mpesa", "M-Pesa"],
+                  ["mpesa", "Co-op / phone"],
                   ["card", "Card"],
                   ["cod", "Pay on delivery"],
                 ] as const
@@ -299,6 +299,11 @@ export default function CheckoutPage() {
                 </button>
               ))}
             </div>
+            {pay === "mpesa" ? (
+              <p className="mt-3 text-xs text-ivory/45">
+                Secured through Co-op Bank sandbox STK — PIN prompt on your phone.
+              </p>
+            ) : null}
           </div>
 
           {stkMessage ? (
@@ -314,9 +319,9 @@ export default function CheckoutPage() {
 
           <button type="submit" className="btn-gold" disabled={paying}>
             {paying
-              ? "Waiting for M-Pesa…"
+              ? "Waiting for Co-op payment…"
               : pay === "mpesa"
-                ? `Pay with M-Pesa · ${formatKes(subtotal)}`
+                ? `Pay now · ${formatKes(subtotal)}`
                 : `Place order · ${formatKes(subtotal)}`}
           </button>
           <p className="text-sm text-ivory/45">
