@@ -32,8 +32,9 @@ function extractJson(raw: string): Partial<AiProductCopy> {
  * Docs: https://console.groq.com/docs/vision
  */
 export async function describeProductFromImage(input: {
-  imageBase64: string;
-  mimeType: string;
+  imageBase64?: string;
+  mimeType?: string;
+  imageUrl?: string;
   hint?: string;
 }): Promise<AiProductCopy> {
   const apiKey = process.env.GROQ_API_KEY;
@@ -43,10 +44,17 @@ export async function describeProductFromImage(input: {
     );
   }
 
-  const model =
-    process.env.GROQ_VISION_MODEL ||
-    "meta-llama/llama-4-scout-17b-16e-instruct";
+  const model = process.env.GROQ_VISION_MODEL || "qwen/qwen3.8-27b";
   const hint = input.hint?.trim();
+
+  const imageUrl =
+    input.imageUrl ||
+    (input.imageBase64
+      ? `data:${input.mimeType || "image/jpeg"};base64,${input.imageBase64}`
+      : "");
+  if (!imageUrl) {
+    throw new Error("Upload a product photo first");
+  }
 
   const system = `You are the merchandising copywriter for ELIJAYS Men's Wear, a Nairobi luxury menswear house (suits, shirts, trousers, jackets, accessories).
 Write copy that makes a shopper open the product and think: “this is exactly what I want.”
@@ -83,9 +91,7 @@ Return ONLY valid JSON with keys: name, shortLine, description, seoTitle, seoDes
             { type: "text", text: userText },
             {
               type: "image_url",
-              image_url: {
-                url: `data:${input.mimeType};base64,${input.imageBase64}`,
-              },
+              image_url: { url: imageUrl },
             },
           ],
         },

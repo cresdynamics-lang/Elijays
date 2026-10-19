@@ -2,13 +2,18 @@
 
 import Script from "next/script";
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+function pixelId() {
+  const id = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || "";
+  if (!id || id.startsWith("YOUR_")) return "";
+  return id;
+}
 
 /**
  * Meta Pixel bootstrap. Set NEXT_PUBLIC_META_PIXEL_ID in env.
  * Events fire via trackMeta() after consent.
  */
 export function MetaPixel() {
+  const PIXEL_ID = pixelId();
   if (!PIXEL_ID) return null;
   return (
     <>

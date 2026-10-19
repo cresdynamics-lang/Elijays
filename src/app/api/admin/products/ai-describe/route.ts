@@ -14,32 +14,35 @@ export async function POST(req: NextRequest) {
 
   const form = await req.formData();
   const file = form.get("file");
-  const imageUrl = String(form.get("imageUrl") || "").trim();
+  const imageUrlRaw = String(form.get("imageUrl") || "").trim();
   const hint = String(form.get("hint") || "").trim();
 
-  let buffer: Buffer;
-  let mimeType = "image/jpeg";
-
-  if (file instanceof File) {
-    mimeType = file.type || "image/jpeg";
-    buffer = Buffer.from(await file.arrayBuffer());
-  } else if (imageUrl) {
-    const abs = imageUrl.startsWith("http")
-      ? imageUrl
-      : new URL(imageUrl, req.nextUrl.origin).toString();
-    const imgRes = await fetch(abs);
-    if (!imgRes.ok) {
-      return NextResponse.json({ error: "Could not load image" }, { status: 400 });
+  // Prefer a public HTTP URL — more reliable for Groq from the VPS.
+  if (imageUrlRaw) {
+    const abs = imageUrlRaw.startsWith("http")
+      ? imageUrlRaw
+      : new URL(imageUrlRaw, req.nextUrl.origin).toString();
+    try {
+      const copy = await describeProductFromImage({
+        imageUrl: abs,
+        hint: hint || undefined,
+      });
+      return NextResponse.json({ ok: true, ...copy });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "AI failed";
+      return NextResponse.json({ error: message }, { status: 502 });
     }
-    mimeType = imgRes.headers.get("content-type") || "image/jpeg";
-    buffer = Buffer.from(await imgRes.arrayBuffer());
-  } else {
+  }
+
+  if (!(file instanceof File)) {
     return NextResponse.json(
       { error: "Upload a product photo first" },
       { status: 400 },
     );
   }
 
+  const mimeType = file.type || "image/jpeg";
+  const buffer = Buffer.from(await file.arrayBuffer());
   if (buffer.length > 8 * 1024 * 1024) {
     return NextResponse.json({ error: "Max 8MB image" }, { status: 400 });
   }

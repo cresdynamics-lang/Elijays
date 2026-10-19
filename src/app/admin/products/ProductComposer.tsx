@@ -144,7 +144,9 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
 
       setAiStatus("reading");
       const aiFd = new FormData();
-      aiFd.append("file", file);
+      // Prefer public URL so Groq can fetch the image from the VPS reliably
+      if (upJson.url) aiFd.append("imageUrl", upJson.url);
+      else aiFd.append("file", file);
       if (form.name) aiFd.append("hint", form.name);
       const ai = await fetch("/api/admin/products/ai-describe", {
         method: "POST",
