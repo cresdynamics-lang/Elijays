@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { formatKes } from "@/components/admin/formatKes";
 import { archiveProduct, updateProduct } from "../actions";
+import { ProductAiAssist } from "@/components/admin/ProductAiAssist";
 
 export default async function ProductEditPage({
   params,
@@ -139,6 +140,7 @@ export default async function ProductEditPage({
         </div>
 
         <aside className="space-y-6">
+          <ProductAiAssist productId={product.id} />
           <form
             action={save}
             className="rounded-xl border border-line bg-noir-soft/40 p-6"

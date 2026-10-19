@@ -28,8 +28,13 @@ export default function CheckoutPage() {
     notes: "",
   });
   const [placed, setPlaced] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState("");
+  const [stkMessage, setStkMessage] = useState("");
+  const [receipt, setReceipt] = useState("");
   const tokenRef = useRef("");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     tokenRef.current = getCheckoutToken();
@@ -40,6 +45,9 @@ export default function CheckoutPage() {
       currency: "KES",
       num_items: count,
     });
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -54,10 +62,10 @@ export default function CheckoutPage() {
     [resolved],
   );
 
-  const persistLead = (next = form) => {
+  const persistLead = async (next = form) => {
     if (!tokenRef.current) return;
     if (!next.name && !next.phone && !next.email && !next.address) return;
-    void fetch("/api/checkout/lead", {
+    await fetch("/api/checkout/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -78,11 +86,15 @@ export default function CheckoutPage() {
     const next = { ...form, [key]: value };
     setForm(next);
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => persistLead(next), 400);
+    saveTimer.current = setTimeout(() => {
+      void persistLead(next);
+    }, 400);
   };
 
   useEffect(() => {
-    const flush = () => persistLead();
+    const flush = () => {
+      void persistLead();
+    };
     window.addEventListener("pagehide", flush);
     window.addEventListener("beforeunload", flush);
     return () => {
@@ -92,6 +104,110 @@ export default function CheckoutPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, itemsPayload, subtotal]);
+
+  const finishPaid = (mpesaReceipt?: string) => {
+    trackMeta({
+      name: "Purchase",
+      content_ids: resolved.map(({ product }) => product.slug),
+      value: subtotal,
+      currency: "KES",
+      num_items: count,
+    });
+    if (mpesaReceipt) setReceipt(mpesaReceipt);
+    clear();
+    setPlaced(true);
+    setPaying(false);
+  };
+
+  const pollPayment = (paymentId: string) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    let ticks = 0;
+    pollRef.current = setInterval(async () => {
+      ticks += 1;
+      try {
+        const res = await fetch(
+          `/api/payments/mpesa/status?paymentId=${encodeURIComponent(paymentId)}`,
+        );
+        const data = await res.json();
+        if (data.status === "PAID") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          finishPaid(data.mpesaReceipt);
+        } else if (data.status === "FAILED") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setPaying(false);
+          setPayError("Payment was cancelled or failed. Try again.");
+        } else if (ticks > 40) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setPaying(false);
+          setPayError(
+            "No confirmation yet. If you paid, keep this page — we’ll confirm shortly — or contact the shop.",
+          );
+        }
+      } catch {
+        /* keep polling */
+      }
+    }, 3000);
+  };
+
+  const placeOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPayError("");
+    setStkMessage("");
+    await persistLead(form);
+
+    if (pay === "mpesa") {
+      setPaying(true);
+      try {
+        const res = await fetch("/api/payments/mpesa/stk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: tokenRef.current,
+            phone: form.phone,
+            amountKes: subtotal,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Could not start M-Pesa");
+        }
+        setStkMessage(
+          data.customerMessage ||
+            "Check your phone and enter your M-Pesa PIN to complete payment.",
+        );
+        pollPayment(data.paymentId);
+      } catch (err) {
+        setPaying(false);
+        setPayError(err instanceof Error ? err.message : "M-Pesa failed");
+      }
+      return;
+    }
+
+    // Card / COD — WhatsApp handoff for now (card gateway next)
+    trackMeta({
+      name: "Purchase",
+      content_ids: resolved.map(({ product }) => product.slug),
+      value: subtotal,
+      currency: "KES",
+      num_items: count,
+    });
+    const lines = resolved.map(
+      ({ product, item }) =>
+        `• ${product.name}${item.size ? ` (${item.size})` : ""} × ${item.qty}`,
+    );
+    const msg = `NEW ORDER — ELIJAYS\n${form.name} · ${form.phone}\n${form.address}\nPay: ${pay.toUpperCase()}\n\n${lines.join("\n")}\nTotal: ${formatKes(subtotal)}\nNotes: ${form.notes || "—"}`;
+    window.open(whatsappOrderUrl(msg), "_blank");
+    if (tokenRef.current) {
+      void fetch("/api/checkout/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: tokenRef.current }),
+        keepalive: true,
+      });
+    }
+    clear();
+    setPlaced(true);
+  };
 
   if (count === 0 && !placed) {
     return (
@@ -108,9 +224,13 @@ export default function CheckoutPage() {
     return (
       <div className="atmosphere mx-auto min-h-screen max-w-xl px-5 pb-28 pt-36 text-center">
         <p className="eyebrow">Order received</p>
-        <h1 className="display mt-4 text-5xl">We have your order</h1>
+        <h1 className="display mt-4 text-5xl">
+          {receipt ? "Payment confirmed" : "We have your order"}
+        </h1>
         <p className="whisper mt-6 text-xl">
-          A stylist will confirm on WhatsApp shortly. Pay with M-Pesa when prompted.
+          {receipt
+            ? `M-Pesa receipt ${receipt}. A stylist will confirm delivery on WhatsApp.`
+            : "A stylist will confirm on WhatsApp shortly."}
         </p>
         <Link href="/" className="btn-gold mt-10 inline-flex">
           Return home
@@ -118,35 +238,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  const placeOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    persistLead(form);
-    trackMeta({
-      name: "Purchase",
-      content_ids: resolved.map(({ product }) => product.slug),
-      value: subtotal,
-      currency: "KES",
-      num_items: count,
-    });
-    const lines = resolved.map(
-      ({ product, item }) =>
-        `• ${product.name}${item.size ? ` (${item.size})` : ""} × ${item.qty}`,
-    );
-    const msg = `NEW ORDER — ELIJAYS\n${form.name} · ${form.phone}\n${form.address}\nPay: ${pay.toUpperCase()}\n\n${lines.join("\n")}\nTotal: ${formatKes(subtotal)}\nNotes: ${form.notes || "—"}`;
-    window.open(whatsappOrderUrl(msg), "_blank");
-    // Promote abandoned lead → NEW
-    if (tokenRef.current) {
-      void fetch("/api/checkout/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: tokenRef.current }),
-        keepalive: true,
-      });
-    }
-    clear();
-    setPlaced(true);
-  };
 
   return (
     <div className="atmosphere min-h-screen pb-28 pt-28 md:pt-36">
@@ -210,8 +301,23 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <button type="submit" className="btn-gold">
-            Place order · {formatKes(subtotal)}
+          {stkMessage ? (
+            <p className="rounded-lg border border-gold/30 bg-gold/5 px-4 py-3 text-sm text-gold">
+              {stkMessage}
+            </p>
+          ) : null}
+          {payError ? (
+            <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {payError}
+            </p>
+          ) : null}
+
+          <button type="submit" className="btn-gold" disabled={paying}>
+            {paying
+              ? "Waiting for M-Pesa…"
+              : pay === "mpesa"
+                ? `Pay with M-Pesa · ${formatKes(subtotal)}`
+                : `Place order · ${formatKes(subtotal)}`}
           </button>
           <p className="text-sm text-ivory/45">
             Or continue on WhatsApp — {BRAND.phone}
@@ -223,7 +329,10 @@ export default function CheckoutPage() {
             <p className="eyebrow">Your bag</p>
             <ul className="mt-4 space-y-3">
               {resolved.map(({ product, item }) => (
-                <li key={`${product.slug}-${item.size}`} className="flex justify-between text-sm">
+                <li
+                  key={`${product.slug}-${item.size}`}
+                  className="flex justify-between text-sm"
+                >
                   <span>
                     {product.name}
                     {item.size ? ` · ${item.size}` : ""} × {item.qty}

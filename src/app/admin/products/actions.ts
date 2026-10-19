@@ -108,6 +108,8 @@ export async function autosaveProduct(input: {
   priceKes: number;
   shortLine?: string;
   description?: string;
+  seoTitle?: string;
+  seoDescription?: string;
   publish?: boolean;
 }) {
   const user = await getSessionUser();
@@ -118,6 +120,8 @@ export async function autosaveProduct(input: {
     input.sku.trim() ||
     `EJ-TMP-${Date.now().toString(36).toUpperCase()}`;
   const status = input.publish ? ProductStatus.PUBLISHED : ProductStatus.DRAFT;
+  const seoTitle = input.seoTitle?.trim() || null;
+  const seoDescription = input.seoDescription?.trim() || null;
 
   if (input.id) {
     const updated = await prisma.product.update({
@@ -130,6 +134,8 @@ export async function autosaveProduct(input: {
         priceKes: input.priceKes || 0,
         shortLine: input.shortLine?.trim() || null,
         description: input.description?.trim() || null,
+        seoTitle,
+        seoDescription,
         status: input.publish ? ProductStatus.PUBLISHED : undefined,
         publishedAt: input.publish ? new Date() : undefined,
       },
@@ -147,6 +153,8 @@ export async function autosaveProduct(input: {
       priceKes: input.priceKes || 0,
       shortLine: input.shortLine?.trim() || null,
       description: input.description?.trim() || null,
+      seoTitle,
+      seoDescription,
       status,
       publishedAt: input.publish ? new Date() : null,
     },
