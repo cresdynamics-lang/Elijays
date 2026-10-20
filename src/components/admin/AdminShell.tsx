@@ -64,22 +64,23 @@ export function AdminShell({ user, badges, children }: Props) {
   }, [navOpen]);
 
   return (
-    <div className="flex min-h-screen flex-1 bg-[#0a0a0a] text-ivory">
-      {navOpen ? (
-        <button
-          type="button"
-          aria-label="Close menu"
-          className="fixed inset-0 z-40 bg-black/70 lg:hidden"
-          onClick={() => setNavOpen(false)}
-        />
-      ) : null}
+    <div className="relative min-h-screen flex-1 bg-[#0a0a0a] text-ivory">
+      <div
+        className={cn(
+          "fixed inset-0 z-40 bg-black/70 transition-opacity duration-200",
+          navOpen ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+        onClick={() => setNavOpen(false)}
+        aria-hidden={!navOpen}
+      />
 
       <aside
         id="admin-sidebar"
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 max-w-[85vw] flex-col border-r border-line bg-[#0a0a0a] transition-transform duration-200 lg:static lg:z-auto lg:w-60 lg:max-w-none lg:translate-x-0",
-          navOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-[min(18rem,86vw)] flex-col border-r border-line bg-[#0d0d0d] shadow-[8px_0_40px_rgba(0,0,0,0.45)] transition-transform duration-200",
+          navOpen ? "translate-x-0" : "-translate-x-full",
         )}
+        aria-hidden={!navOpen}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-5">
           <Link href="/admin" className="flex items-center gap-3">
@@ -92,7 +93,7 @@ export function AdminShell({ user, badges, children }: Props) {
           </Link>
           <button
             type="button"
-            className="rounded-lg border border-line p-2 text-ivory lg:hidden"
+            className="rounded-lg border border-line p-2 text-ivory"
             onClick={() => setNavOpen(false)}
             aria-label="Close menu"
           >
@@ -148,7 +149,7 @@ export function AdminShell({ user, badges, children }: Props) {
           })}
         </nav>
         <div className="border-t border-line px-4 py-3">
-          <p className="mb-3 px-1 text-xs text-ivory-muted lg:hidden">
+          <p className="mb-3 px-1 text-xs text-ivory-muted">
             <span className="text-ivory">{user.name}</span>{" "}
             <span className="text-ivory-faint">({ROLE_LABELS[user.role]})</span>
           </p>
@@ -156,18 +157,24 @@ export function AdminShell({ user, badges, children }: Props) {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col bg-noir-soft/30">
-        <header className="flex shrink-0 items-center gap-3 border-b border-line px-4 py-3 sm:gap-4 sm:px-6">
+      <div className="flex min-h-screen min-w-0 flex-col bg-noir-soft/30">
+        <header className="sticky top-0 z-30 flex shrink-0 items-center gap-3 border-b border-line bg-[#0a0a0a]/95 px-4 py-3 backdrop-blur sm:gap-4 sm:px-6">
           <button
             type="button"
-            className="rounded-lg border border-line p-2 text-ivory lg:hidden"
-            onClick={() => setNavOpen(true)}
-            aria-label="Open menu"
+            className="rounded-lg border border-line p-2 text-ivory hover:border-gold/40 hover:text-gold"
+            onClick={() => setNavOpen((open) => !open)}
+            aria-label={navOpen ? "Close menu" : "Open menu"}
             aria-controls="admin-sidebar"
             aria-expanded={navOpen}
           >
-            <MenuIcon open={false} />
+            <MenuIcon open={navOpen} />
           </button>
+          <Link
+            href="/admin"
+            className="hidden font-display text-sm tracking-[0.22em] text-gold sm:inline"
+          >
+            ELIJAYS
+          </Link>
           <div className="flex-1">
             <input
               type="search"
@@ -176,7 +183,7 @@ export function AdminShell({ user, badges, children }: Props) {
               readOnly
             />
           </div>
-          <p className="hidden text-xs text-ivory-muted sm:block">
+          <p className="hidden text-xs text-ivory-muted md:block">
             Open now ·{" "}
             <span className="text-ivory">{user.name}</span>{" "}
             <span className="text-ivory-faint">({ROLE_LABELS[user.role]})</span>
