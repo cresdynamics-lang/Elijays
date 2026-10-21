@@ -1,17 +1,23 @@
+"use client";
+
 export { MobileBar } from "@/components/nav/MobileBar";
 
+import { IconWhatsApp } from "@/components/Icons";
+import { track } from "@/lib/analytics";
 import { BRAND } from "@/lib/constants";
 
-/** Desktop floating WhatsApp — page-aware message set by consumers when needed */
+/** Floating WhatsApp chat — bottom right, all viewports */
 export function WhatsAppFab() {
   return (
     <a
       href={`${BRAND.whatsapp}?text=${encodeURIComponent("Hello ELIJAYS. I would like to speak with a stylist.")}`}
       target="_blank"
       rel="noreferrer"
-      className="fixed bottom-20 right-5 z-40 hidden items-center gap-2 rounded-xl bg-gold px-4 py-3 font-[family-name:var(--font-jost)] text-[0.65rem] uppercase tracking-[0.18em] text-noir shadow-[0_0_40px_var(--gold-glow)] transition-colors hover:bg-[#f0d9a8] md:flex"
+      aria-label="Chat on WhatsApp"
+      onClick={() => track({ name: "whatsapp_click", page: "fab" })}
+      className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_28px_rgba(37,211,102,0.45)] transition hover:scale-105 hover:bg-[#20bd5a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25D366] md:bottom-6 md:right-6"
     >
-      WhatsApp a stylist
+      <IconWhatsApp size={30} />
     </a>
   );
 }
