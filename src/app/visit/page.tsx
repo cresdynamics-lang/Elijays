@@ -109,7 +109,7 @@ export default function VisitPage() {
             className="absolute inset-0 w-full h-full grayscale opacity-80"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            src="https://maps.google.com/maps?q=Muindi%20Mbingu%20Street%20Biashara%20Street%20Equity%20Bank%20Nairobi&t=&z=16&ie=UTF8&iwloc=&output=embed"
+            src={BRAND.mapsEmbed}
           />
         </div>
       </div>

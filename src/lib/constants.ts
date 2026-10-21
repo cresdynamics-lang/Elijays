@@ -21,8 +21,10 @@ export const BRAND = {
     landmark: "Muindi Mbingu × Biashara, opposite Equity Bank",
   },
   hours: "Monday to Saturday, 8am to 8pm",
-  mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=Muindi+Mbingu+Street+Biashara+Street+Equity+Bank+Nairobi",
+  mapsUrl: "https://share.google/Njoe0DGCVIZ79L5q8",
+  mapsEmbed:
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.816!2d36.8200918!3d-1.28338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f118a48bb052b%3A0xb307d34cc7fda90b!2sEljay%27s%20Men%27s%20Wear!5e0!3m2!1sen!2ske",
+  geo: { lat: -1.28338, lng: 36.8200918 },
 } as const;
 
 export const TRUST_STRIP = [

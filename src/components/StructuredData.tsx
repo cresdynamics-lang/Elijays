@@ -36,8 +36,8 @@ export function StructuredData() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: -1.2833,
-      longitude: 36.8219,
+      latitude: BRAND.geo.lat,
+      longitude: BRAND.geo.lng,
     },
     openingHoursSpecification: [
       {
