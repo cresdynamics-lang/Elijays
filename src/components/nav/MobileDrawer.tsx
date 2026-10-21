@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { track } from "@/lib/analytics";
@@ -94,17 +93,11 @@ export function MobileDrawer({
                   </button>
                   {isOpen && (
                     <div className="pb-6">
-                      <div className="relative mb-4 aspect-video overflow-hidden bg-noir-elevated">
-                        <Image
-                          src={cat.image.src}
-                          alt={cat.image.alt}
-                          width={cat.image.width}
-                          height={Math.round(cat.image.width * (9 / 16))}
-                          className="h-full w-full object-cover"
-                          sizes="(max-width:768px) 100vw, 88vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-noir/70 to-transparent" />
-                        <p className="absolute bottom-3 left-3 right-3 font-[family-name:var(--font-cormorant)] text-base italic text-ivory/85">
+                      <div className="mb-4 rounded-xl border border-[var(--line)] bg-gradient-to-br from-noir-elevated/90 to-noir p-5">
+                        <p className="text-[0.6rem] uppercase tracking-[0.24em] text-gold/70">
+                          {cat.label}
+                        </p>
+                        <p className="mt-2 font-[family-name:var(--font-cormorant)] text-base italic text-ivory/80">
                           {cat.subline}
                         </p>
                       </div>

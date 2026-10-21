@@ -78,13 +78,14 @@ async function main() {
   await prisma.setting.deleteMany();
   await prisma.user.deleteMany();
 
-  const passwordHash = await bcrypt.hash("elijays2026", 10);
+  const ownerPasswordHash = await bcrypt.hash("Turuthi.Elijays", 10);
+  const staffPasswordHash = await bcrypt.hash("elijays2026", 10);
 
   const nehemiah = await prisma.user.create({
     data: {
-      email: "nehemiah@elijays.co.ke",
+      email: "nehekamiah@gmail.com",
       name: "Nehemiah",
-      passwordHash,
+      passwordHash: ownerPasswordHash,
       role: RoleKey.OWNER,
     },
   });
@@ -92,7 +93,7 @@ async function main() {
     data: {
       email: "eli@elijays.co.ke",
       name: "Eli",
-      passwordHash,
+      passwordHash: staffPasswordHash,
       role: RoleKey.EDITOR,
     },
   });
@@ -100,7 +101,7 @@ async function main() {
     data: {
       email: "jay@elijays.co.ke",
       name: "Jay",
-      passwordHash,
+      passwordHash: staffPasswordHash,
       role: RoleKey.STOCK,
     },
   });
@@ -108,7 +109,7 @@ async function main() {
     data: {
       email: "wanjiru@elijays.co.ke",
       name: "Wanjiru",
-      passwordHash,
+      passwordHash: staffPasswordHash,
       role: RoleKey.SALES,
     },
   });
@@ -604,7 +605,7 @@ async function main() {
 
   const count = await prisma.product.count({ where: { deletedAt: null } });
   console.log(`Seed complete. ${count} products. Owner: Nehemiah.`);
-  console.log("Admin login: nehemiah@elijays.co.ke / elijays2026");
+  console.log("Admin login: nehekamiah@gmail.com / Turuthi.Elijays");
 }
 
 main()

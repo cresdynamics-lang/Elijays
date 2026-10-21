@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
-import type { NavCategory, NavImage, NavLink } from "@/lib/navigation";
+import type { NavCategory } from "@/lib/navigation";
 
 type Props = {
   category: NavCategory;
@@ -21,29 +20,7 @@ export function MegaMenuPanel({
   panelId,
   finePointer,
 }: Props) {
-  const [activeImage, setActiveImage] = useState<NavImage>(category.image);
-  const [fadeKey, setFadeKey] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (open) {
-      setActiveImage(category.image);
-      setFadeKey((k) => k + 1);
-    }
-  }, [open, category]);
-
-  const swapImage = useCallback(
-    (link?: NavLink) => {
-      const next = link?.image ?? category.image;
-      setActiveImage(next);
-      setFadeKey((k) => k + 1);
-      if (link?.image) {
-        const preload = new window.Image();
-        preload.src = link.image.src;
-      }
-    },
-    [category.image]
-  );
 
   useEffect(() => {
     if (!open) return;
@@ -85,10 +62,6 @@ export function MegaMenuPanel({
                   <Link
                     href={link.href}
                     className="group block rounded-sm px-2 py-2.5 outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-noir"
-                    onMouseEnter={() => {
-                      if (finePointer) swapImage(link);
-                    }}
-                    onFocus={() => swapImage(link)}
                     onClick={() => {
                       track({
                         name: "nav_link_click",
@@ -111,41 +84,32 @@ export function MegaMenuPanel({
           ))}
         </div>
 
-        <aside className="relative mx-auto w-full max-w-[280px] overflow-hidden lg:mx-0 lg:max-w-[380px]">
-          <div className="relative aspect-[4/5] w-full bg-noir-elevated">
-            <Image
-              key={fadeKey}
-              src={activeImage.src}
-              alt={activeImage.alt}
-              width={activeImage.width}
-              height={activeImage.height}
-              className="h-full w-full object-cover motion-safe:animate-[crossfade_200ms_ease-out]"
-              sizes="(max-width:1279px) 280px, 380px"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/50 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-5 lg:p-6">
-              <p className="font-[family-name:var(--font-playfair)] text-2xl leading-tight text-ivory lg:text-3xl">
-                {category.headline}
-              </p>
-              <p className="mt-2 font-[family-name:var(--font-cormorant)] text-base italic text-ivory/70 lg:text-lg">
-                {category.subline}
-              </p>
-              <Link
-                href={category.cta.href}
-                className="btn-ghost mt-5 inline-flex px-4 py-2.5 text-[0.65rem]"
-                onClick={() => {
-                  track({
-                    name: "nav_cta_click",
-                    category: category.id,
-                    cta: category.cta.label,
-                  });
-                  onClose();
-                }}
-              >
-                {category.cta.label}
-              </Link>
-            </div>
+        <aside className="flex flex-col justify-between rounded-xl border border-[var(--line)] bg-gradient-to-br from-noir-elevated/90 via-noir-soft/50 to-noir p-7 lg:p-8">
+          <div>
+            <p className="text-[0.65rem] uppercase tracking-[0.28em] text-gold/70">
+              {category.label}
+            </p>
+            <p className="font-[family-name:var(--font-playfair)] mt-4 text-2xl leading-tight text-ivory lg:text-3xl">
+              {category.headline}
+            </p>
+            <p className="mt-3 font-[family-name:var(--font-cormorant)] text-base italic text-ivory/70 lg:text-lg">
+              {category.subline}
+            </p>
           </div>
+          <Link
+            href={category.cta.href}
+            className="btn-gold mt-8 inline-flex w-fit px-4 py-2.5 text-[0.65rem]"
+            onClick={() => {
+              track({
+                name: "nav_cta_click",
+                category: category.id,
+                cta: category.cta.label,
+              });
+              onClose();
+            }}
+          >
+            {category.cta.label}
+          </Link>
         </aside>
       </div>
     </div>

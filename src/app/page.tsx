@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BRAND, TRUST_STRIP, formatKes } from "@/lib/constants";
 import { getEnabledCategories } from "@/lib/navigation";
+import { CategoryCard } from "@/components/CategoryCard";
 import { completeLook, getNewArrivals, getProduct, looks } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 
@@ -131,30 +132,15 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-            {wardrobe.map((w) => (
-              <Link
+            {wardrobe.map((w, i) => (
+              <CategoryCard
                 key={w.slug}
+                index={i}
+                label={w.label}
+                subline={w.page.subline}
                 href={w.slug}
-                className="group relative aspect-[4/5] overflow-hidden rounded-xl"
-              >
-                <Image
-                  src={w.image.src}
-                  alt={w.image.alt}
-                  fill
-                  sizes="(max-width:768px) 100vw, 33vw"
-                  quality={65}
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/15 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-                  <p className="display text-2xl text-ivory transition-colors group-hover:text-gold md:text-3xl">
-                    {w.label}
-                  </p>
-                  <p className="mt-1.5 font-[family-name:var(--font-cormorant)] text-base italic text-ivory/60">
-                    {w.page.subline}
-                  </p>
-                </div>
-              </Link>
+                links={w.links}
+              />
             ))}
           </div>
         </div>
