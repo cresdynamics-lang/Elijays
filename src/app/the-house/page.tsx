@@ -36,7 +36,7 @@ export default function TheHousePage() {
           We dress men who walk in with somewhere to be.
         </h1>
         <p className="mt-8 text-lg text-ivory/60 max-w-2xl leading-relaxed">
-          ELIJAYS is a men&apos;s house on Kimathi Street. We stock the wardrobe,
+          ELIJAYS is a men&apos;s house on Muindi Mbingu Street. We stock the wardrobe,
           tailor what needs tailoring, and stand behind the fit.
         </p>
 

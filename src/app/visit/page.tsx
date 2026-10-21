@@ -5,7 +5,7 @@ import { BRAND } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Visit Us",
-  description: "Kimathi Street at Muindi Mbingu × Biashara, Nairobi CBD.",
+  description: "Muindi Mbingu Street at the Biashara Street junction, opposite Equity Bank, Nairobi CBD.",
 };
 
 export default function VisitPage() {
@@ -14,7 +14,7 @@ export default function VisitPage() {
       <div className="mx-auto max-w-[1600px] px-5 md:px-8 lg:px-12">
         <p className="eyebrow">Visit us</p>
         <h1 className="display text-5xl md:text-7xl mt-4">
-          Kimathi Street, Nairobi
+          Muindi Mbingu Street, Nairobi
         </h1>
         <p className="whisper text-2xl md:text-3xl mt-6">The door is open.</p>
 
@@ -22,7 +22,7 @@ export default function VisitPage() {
           <div className="relative min-h-[480px] overflow-hidden border border-[var(--line)]">
             <Image
               src="/brand/elijays-storefront.jpg"
-              alt="ELIJAYS on Kimathi Street"
+              alt="ELIJAYS on Muindi Mbingu Street"
               fill
               className="object-cover"
             />
@@ -33,6 +33,8 @@ export default function VisitPage() {
                 Address
               </p>
               <p className="text-lg text-ivory/80 leading-relaxed">
+                {BRAND.address.street}
+                <br />
                 {BRAND.address.junction}
                 <br />
                 {BRAND.address.city}
@@ -52,7 +54,7 @@ export default function VisitPage() {
                 Landmark
               </p>
               <p className="text-lg text-ivory/80">
-                Near the Muindi Mbingu × Biashara junction. Nearby parking available in the CBD.
+                Opposite Equity Bank, at the junction with Biashara Street. Nearby parking available in the CBD.
               </p>
             </div>
             <div>
@@ -107,7 +109,7 @@ export default function VisitPage() {
             className="absolute inset-0 w-full h-full grayscale opacity-80"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            src="https://maps.google.com/maps?q=Kimathi%20Street%20Muindi%20Mbingu%20Nairobi&t=&z=16&ie=UTF8&iwloc=&output=embed"
+            src="https://maps.google.com/maps?q=Muindi%20Mbingu%20Street%20Biashara%20Street%20Equity%20Bank%20Nairobi&t=&z=16&ie=UTF8&iwloc=&output=embed"
           />
         </div>
       </div>

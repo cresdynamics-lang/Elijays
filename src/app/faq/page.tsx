@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "FAQ" };
 const FAQS = [
   {
     q: "Are the pieces original and imported?",
-    a: "Yes. Every piece on the site is what we stock on Kimathi Street. Ask a stylist if you want the story behind a cloth.",
+    a: "Yes. Every piece on the site is what we stock on Muindi Mbingu Street. Ask a stylist if you want the story behind a cloth.",
   },
   {
     q: "Do you alter in-store?",

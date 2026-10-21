@@ -315,9 +315,9 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col justify-center rounded-xl border border-[var(--line)] bg-noir-soft/50 p-8 md:p-12">
             <p className="eyebrow">Visit the house</p>
-            <h2 className="display mt-3 text-3xl md:text-4xl">Kimathi Street</h2>
+            <h2 className="display mt-3 text-3xl md:text-4xl">{BRAND.address.street}</h2>
             <p className="mt-5 max-w-md leading-relaxed text-ivory/65">
-              At the Muindi Mbingu × Biashara junction, Nairobi CBD. Open six days, 8am to 8pm.
+              {BRAND.address.junction}, {BRAND.address.city}. Open six days, 8am to 8pm.
             </p>
             <p className="mt-3 text-sm text-ivory/45">{BRAND.hours}</p>
             <p className="mt-2 text-sm text-gold">WhatsApp {BRAND.phone}</p>

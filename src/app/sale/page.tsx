@@ -6,7 +6,7 @@ import { MetaBrowse } from "@/components/MetaEvents";
 export const metadata = {
   title: "Sale · Bestsellers",
   description:
-    "ELIJAYS bestsellers — the pieces men re-order. Suits, shirts and finishing details from Kimathi Street.",
+    "ELIJAYS bestsellers — the pieces men re-order. Suits, shirts and finishing details from Muindi Mbingu Street.",
 };
 
 export default function SalePage() {

@@ -15,14 +15,14 @@ export const BRAND = {
   email: "hello@elijays.co.ke",
   instagram: "https://instagram.com/elijaysmenswear",
   address: {
-    street: "Kimathi Street",
-    junction: "At the Muindi Mbingu × Biashara junction",
+    street: "Muindi Mbingu Street",
+    junction: "Junction with Biashara Street, opposite Equity Bank",
     city: "Nairobi CBD",
-    landmark: "Muindi Mbingu × Biashara St",
+    landmark: "Muindi Mbingu × Biashara, opposite Equity Bank",
   },
   hours: "Monday to Saturday, 8am to 8pm",
   mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=Kimathi+Street+Muindi+Mbingu+Nairobi",
+    "https://www.google.com/maps/search/?api=1&query=Muindi+Mbingu+Street+Biashara+Street+Equity+Bank+Nairobi",
 } as const;
 
 export const TRUST_STRIP = [

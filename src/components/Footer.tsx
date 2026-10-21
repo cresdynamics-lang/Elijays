@@ -22,7 +22,7 @@ export function Footer() {
               {BRAND.name}
             </p>
             <p className="whisper mt-4 max-w-sm text-xl">
-              Men&apos;s wear on Kimathi Street.
+              Men&apos;s wear on Muindi Mbingu Street.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-ivory/55">
               {BRAND.address.street}

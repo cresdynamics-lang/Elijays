@@ -28,7 +28,7 @@ export default function DeliveryPage() {
           <div>
             <h2 className="display text-2xl text-ivory">Authenticity promise</h2>
             <p className="mt-3">
-              Documented and stocked on Kimathi Street. If it is on the site, it is in the house.
+              Documented and stocked on Muindi Mbingu Street. If it is on the site, it is in the house.
             </p>
           </div>
         </div>

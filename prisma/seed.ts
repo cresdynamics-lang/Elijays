@@ -115,7 +115,7 @@ async function main() {
   });
 
   const shop = await prisma.location.create({
-    data: { code: "SHOP", name: "Kimathi Street shop" },
+    data: { code: "SHOP", name: "Muindi Mbingu Street shop" },
   });
   const web = await prisma.location.create({
     data: { code: "WEB", name: "Website" },
@@ -536,7 +536,7 @@ async function main() {
       {
         key: "shop",
         value: {
-          address: "Kimathi Street, at the Muindi Mbingu junction, Nairobi CBD",
+          address: "Muindi Mbingu Street, junction with Biashara Street, opposite Equity Bank, Nairobi CBD",
           hours: "Mon to Sat, 8am to 8pm",
           whatsapp: "0708269209",
         },

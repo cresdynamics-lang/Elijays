@@ -18,7 +18,7 @@ const STEPS = [
   {
     n: "03",
     title: "Measure",
-    text: "Precise measures at Kimathi Street. Kept on file for life.",
+    text: "Precise measures at Muindi Mbingu Street. Kept on file for life.",
   },
   {
     n: "04",

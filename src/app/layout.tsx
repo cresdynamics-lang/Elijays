@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     template: "%s | ELIJAYS Men's Wear",
   },
   description:
-    "Suits, shirts and finishing details. Kimathi Street at Muindi Mbingu × Biashara, Nairobi. WhatsApp orders, M-Pesa, free in-store alterations.",
+    "Suits, shirts and finishing details. Muindi Mbingu Street at Biashara, opposite Equity Bank, Nairobi. WhatsApp orders, M-Pesa, free in-store alterations.",
   openGraph: {
     title: "ELIJAYS Men's Wear",
     description: "Command the room before you speak.",

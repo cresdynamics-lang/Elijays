@@ -90,7 +90,7 @@ export function getWhatsAppStylistUrl(pageLabel: string): string {
 }
 
 /**
- * Storefront hours only (Kimathi Street, Mon–Sat 8am–8pm).
+ * Storefront hours only (Muindi Mbingu Street, Mon–Sat 8am–8pm).
  * Online ordering, WhatsApp and the bag stay available 24/7.
  */
 export function getShopOpenStatus(now = new Date()): {
