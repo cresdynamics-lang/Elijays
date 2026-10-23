@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { accessLabel } from "@/lib/auth/permissions";
+import { StaffForm } from "./StaffForm";
 import { saveShopSettings } from "./actions";
 
 type ShopValue = { address?: string; hours?: string; whatsapp?: string };
@@ -8,12 +10,16 @@ export default async function SettingsPage() {
   const shop = await prisma.setting.findUnique({ where: { key: "shop" } });
   const payments = await prisma.setting.findUnique({ where: { key: "payments" } });
   const delivery = await prisma.setting.findUnique({ where: { key: "delivery" } });
+  const staff = await prisma.user.findMany({
+    where: { deletedAt: null },
+    orderBy: { createdAt: "asc" },
+  });
   const value = (shop?.value ?? {}) as ShopValue;
 
   return (
     <div>
-      <PageHeader title="Settings" subtitle="Shop · delivery · payments · integrations" />
-      <div className="grid gap-8 lg:grid-cols-2">
+      <PageHeader title="Settings" subtitle="Shop · staff accounts · permissions" />
+      <div className="grid gap-8 xl:grid-cols-2">
         <form
           action={saveShopSettings}
           className="space-y-4 rounded-xl border border-line bg-noir-soft/40 p-6"
@@ -60,33 +66,49 @@ export default async function SettingsPage() {
           </button>
         </form>
 
-        <div className="space-y-4">
-          <section className="rounded-xl border border-line bg-noir-soft/40 p-6">
-            <h2 className="mb-3 text-xs uppercase tracking-widest text-ivory-faint">
-              Payments
-            </h2>
-            <pre className="font-mono text-xs text-ivory-muted">
-              {JSON.stringify(payments?.value ?? {}, null, 2)}
-            </pre>
-          </section>
-          <section className="rounded-xl border border-line bg-noir-soft/40 p-6">
-            <h2 className="mb-3 text-xs uppercase tracking-widest text-ivory-faint">
-              Delivery
-            </h2>
-            <pre className="font-mono text-xs text-ivory-muted">
-              {JSON.stringify(delivery?.value ?? {}, null, 2)}
-            </pre>
-          </section>
-          <section className="rounded-xl border border-line bg-noir-soft/40 p-6">
-            <h2 className="mb-3 text-xs uppercase tracking-widest text-ivory-faint">
-              Users and roles
-            </h2>
-            <p className="text-sm text-ivory-muted">
-              Owner · Manager · Catalogue · Editor · Sales · Stock · Tailor — managed under
-              Users and Roles. Sign-in uses email and password.
-            </p>
-          </section>
-        </div>
+        <section className="space-y-4 rounded-xl border border-line bg-noir-soft/40 p-6">
+          <h2 className="text-xs uppercase tracking-widest text-ivory-faint">
+            Staff accounts
+          </h2>
+          <p className="text-sm text-ivory-muted">
+            Create a personal admin login and tick what they may manage: products,
+            orders, blog, and the rest.
+          </p>
+          <StaffForm />
+          <ul className="divide-y divide-line/60 pt-4">
+            {staff.map((person) => (
+              <li key={person.id} className="py-3">
+                <p className="text-sm text-ivory">
+                  {person.name}{" "}
+                  <span className="text-ivory-faint">· {accessLabel(person)}</span>
+                </p>
+                <p className="text-xs text-ivory-muted">{person.email}</p>
+                {person.allowedModules.length > 0 ? (
+                  <p className="mt-1 text-[11px] uppercase tracking-widest text-gold/80">
+                    {person.allowedModules.join(" · ")}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="rounded-xl border border-line bg-noir-soft/40 p-6">
+          <h2 className="mb-3 text-xs uppercase tracking-widest text-ivory-faint">
+            Payments
+          </h2>
+          <pre className="font-mono text-xs text-ivory-muted">
+            {JSON.stringify(payments?.value ?? {}, null, 2)}
+          </pre>
+        </section>
+        <section className="rounded-xl border border-line bg-noir-soft/40 p-6">
+          <h2 className="mb-3 text-xs uppercase tracking-widest text-ivory-faint">
+            Delivery
+          </h2>
+          <pre className="font-mono text-xs text-ivory-muted">
+            {JSON.stringify(delivery?.value ?? {}, null, 2)}
+          </pre>
+        </section>
       </div>
     </div>
   );

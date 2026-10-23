@@ -9,7 +9,7 @@ import {
   getWhatsAppStylistUrl,
   navigationConfig,
 } from "@/lib/navigation";
-import { IconBag, IconSearch } from "@/components/Icons";
+import { IconCart, IconSearch } from "@/components/Icons";
 
 export function MobileBar() {
   const { count } = useCart();
@@ -23,7 +23,7 @@ export function MobileBar() {
   return (
     <nav
       aria-label="Mobile shortcuts"
-      className="fixed bottom-0 inset-x-0 z-50 border-t border-[var(--line)] bg-noir/95 backdrop-blur-md md:hidden"
+      className="fixed bottom-0 inset-x-0 z-50 border-t border-[var(--line)] bg-noir/95 backdrop-blur-md print:hidden md:hidden"
     >
       <div className="grid grid-cols-5 text-center">
         {items.map((item) => {
@@ -62,9 +62,9 @@ export function MobileBar() {
                 key={item.id}
                 href={item.href || "/bag"}
                 className="relative flex flex-col items-center justify-center gap-1 py-3 text-ivory/70"
-                aria-label={`Bag, ${count} items`}
+                aria-label={`Cart, ${count} items`}
               >
-                <IconBag size={18} />
+                <IconCart size={18} />
                 {count > 0 && (
                   <span className="absolute right-[28%] top-2 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-gold px-1 text-[0.5rem] text-noir">
                     {count}

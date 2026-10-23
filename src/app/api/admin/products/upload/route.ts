@@ -3,19 +3,20 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/session";
-import { canAccess } from "@/lib/auth/permissions";
+import { userCan } from "@/lib/auth/permissions";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser();
-  if (!user || !canAccess(user.role, "products")) {
+  if (!userCan(user, "products") && !userCan(user, "inventory")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const form = await req.formData();
   const file = form.get("file");
   const productId = String(form.get("productId") || "").trim() || null;
+  const colour = String(form.get("colour") || "").trim() || null;
 
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "file required" }, { status: 400 });
@@ -49,13 +50,19 @@ export async function POST(req: NextRequest) {
     data: {
       filename,
       url,
-      alt: file.name || filename,
+      alt: colour || file.name || filename,
       mimeType: mime,
       bytes: bytes.length,
     },
   });
 
   if (productId) {
+    if (colour) {
+      await prisma.productImage.updateMany({
+        where: { productId, colour, deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
+    }
     const count = await prisma.productImage.count({
       where: { productId, deletedAt: null },
     });
@@ -63,6 +70,7 @@ export async function POST(req: NextRequest) {
       data: {
         productId,
         mediaId: media.id,
+        colour,
         sortOrder: count,
       },
     });
@@ -73,5 +81,6 @@ export async function POST(req: NextRequest) {
     mediaId: media.id,
     url: media.url,
     mimeType: mime,
+    colour,
   });
 }

@@ -123,7 +123,14 @@ export default async function ProductsPage({
                     />
                   </Td>
                   <Td>{formatKes(p.priceKes)}</Td>
-                  <Td>{stock}</Td>
+                  <Td>
+                    <Link
+                      href={`/admin/products/${p.id}#stock`}
+                      className="hover:text-gold"
+                    >
+                      {stock}
+                    </Link>
+                  </Td>
                 </tr>
               );
             })

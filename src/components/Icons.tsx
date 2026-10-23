@@ -43,6 +43,27 @@ export function IconBag({ className = "", size = 20 }: IconProps) {
   );
 }
 
+export function IconCart({ className = "", size = 20 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <circle cx="9" cy="20" r="1.4" />
+      <circle cx="18" cy="20" r="1.4" />
+      <path d="M3 4h2l2.2 11.2a1.6 1.6 0 0 0 1.6 1.3h8.7a1.6 1.6 0 0 0 1.6-1.3L21 8H6.4" />
+    </svg>
+  );
+}
+
 export function IconMenu({ className = "", size = 22 }: IconProps) {
   return (
     <svg

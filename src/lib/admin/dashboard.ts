@@ -28,7 +28,6 @@ export async function getDashboardData(userName: string) {
     lowStockProducts,
     todayAppointments,
     bestsellers,
-    pendingReviews,
     publishedCount,
   ] = await Promise.all([
     prisma.payment.aggregate({
@@ -102,7 +101,6 @@ export async function getDashboardData(userName: string) {
       take: 5,
       orderBy: { updatedAt: "desc" },
     }),
-    prisma.review.count({ where: { deletedAt: null, status: "PENDING" } }),
     prisma.product.count({
       where: { deletedAt: null, status: ProductStatus.PUBLISHED },
     }),
@@ -120,7 +118,7 @@ export async function getDashboardData(userName: string) {
 
   const attention: { label: string; href: string }[] = [];
   if (lowStock > 0) {
-    attention.push({ label: `${lowStock} SKUs at or below alert`, href: "/admin/inventory" });
+    attention.push({ label: `${lowStock} SKUs at or below alert`, href: "/admin/stock" });
   }
   if (abandonedLeads > 0) {
     attention.push({
@@ -128,14 +126,11 @@ export async function getDashboardData(userName: string) {
       href: "/admin/orders?status=ABANDONED",
     });
   }
-  if (pendingReviews > 0) {
-    attention.push({
-      label: `${pendingReviews} reviews awaiting approval`,
-      href: "/admin/reviews",
-    });
-  }
   for (const p of lowStockProducts.slice(0, 3)) {
-    attention.push({ label: `${p.name} — check stock`, href: `/admin/products/${p.id}` });
+    attention.push({
+      label: `${p.name} — check stock`,
+      href: `/admin/products/${p.id}#stock`,
+    });
   }
 
   return {
@@ -144,7 +139,7 @@ export async function getDashboardData(userName: string) {
     ordersWaiting,
     fittingsToday,
     lowStock,
-    newMessages: pendingReviews,
+    newMessages: 0,
     abandonedLeads,
     publishedCount,
     ordersToAction,

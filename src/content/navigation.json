@@ -40,7 +40,7 @@
       "href": "/wishlist"
     },
     "bag": {
-      "label": "Bag",
+      "label": "Cart",
       "href": "/bag"
     }
   },
@@ -624,7 +624,7 @@
     { "id": "shop", "label": "Shop", "href": "/suits" },
     { "id": "search", "label": "Search", "action": "search" },
     { "id": "bespoke", "label": "Bespoke", "href": "/bespoke" },
-    { "id": "bag", "label": "Bag", "href": "/bag", "showCount": true },
+    { "id": "bag", "label": "Cart", "href": "/bag", "showCount": true },
     { "id": "whatsapp", "label": "WhatsApp", "action": "whatsapp" }
   ]
 }

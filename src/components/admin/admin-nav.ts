@@ -22,8 +22,8 @@ export const ADMIN_NAV_GROUPS: NavGroupConfig[] = [
     items: [
       { label: "Products", href: "/admin/products", module: "products" },
       {
-        label: "Inventory",
-        href: "/admin/inventory",
+        label: "Stock",
+        href: "/admin/stock",
         module: "inventory",
         badgeKey: "lowStock",
       },
@@ -33,6 +33,7 @@ export const ADMIN_NAV_GROUPS: NavGroupConfig[] = [
     title: "SALES",
     items: [
       { label: "Orders", href: "/admin/orders", module: "orders", badgeKey: "orders" },
+      { label: "Payments", href: "/admin/payments", module: "orders" },
       {
         label: "Bespoke and Fittings",
         href: "/admin/bespoke",
@@ -51,17 +52,12 @@ export const ADMIN_NAV_GROUPS: NavGroupConfig[] = [
   },
   {
     title: "GROWTH",
-    items: [
-      { label: "Marketing", href: "/admin/marketing", module: "marketing" },
-      { label: "Reviews", href: "/admin/reviews", module: "reviews", badgeKey: "reviews" },
-      { label: "Reports", href: "/admin/reports", module: "reports" },
-    ],
+    items: [{ label: "Reports", href: "/admin/reports", module: "reports" }],
   },
   {
     title: "SYSTEM",
     items: [
       { label: "Settings", href: "/admin/settings", module: "settings" },
-      { label: "Users and Roles", href: "/admin/users", module: "users" },
       { label: "Audit Log", href: "/admin/audit", module: "audit" },
     ],
   },

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { autosaveProduct, publishProduct } from "./actions";
+import { whatsappProductUpdateUrl } from "@/lib/constants";
 
 type Cat = { id: string; name: string };
 
@@ -357,6 +358,15 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
         />
       </label>
 
+      {productId ? (
+        <a
+          href={`/admin/products/${productId}#stock`}
+          className="block text-xs uppercase tracking-widest text-gold hover:underline"
+        >
+          Add colours, sizes and stock →
+        </a>
+      ) : null}
+
       <div className="flex flex-wrap gap-2 pt-2">
         <button
           type="button"
@@ -374,6 +384,25 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
           className="rounded-full border border-gold/40 bg-gold/10 px-6 py-2 text-xs uppercase tracking-widest text-gold disabled:opacity-40"
         >
           Publish to site
+        </button>
+        <button
+          type="button"
+          disabled={!form.name.trim()}
+          onClick={() => {
+            window.open(
+              whatsappProductUpdateUrl({
+                name: form.name,
+                sku: form.sku,
+                shortLine: form.shortLine,
+                priceKes: form.priceKes,
+              }),
+              "_blank",
+              "noopener,noreferrer",
+            );
+          }}
+          className="rounded-full border border-line px-6 py-2 text-xs uppercase tracking-widest text-ivory-muted hover:text-gold"
+        >
+          Test on WhatsApp
         </button>
       </div>
     </div>

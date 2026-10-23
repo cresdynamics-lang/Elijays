@@ -53,7 +53,10 @@ export async function logout() {
   jar.delete(COOKIE);
 }
 
-export type SessionUser = Pick<User, "id" | "email" | "name" | "role">;
+export type SessionUser = Pick<
+  User,
+  "id" | "email" | "name" | "role" | "allowedModules"
+>;
 
 export async function getSessionUser(): Promise<SessionUser | null> {
   const jar = await cookies();
@@ -74,6 +77,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     email: session.user.email,
     name: session.user.name,
     role: session.user.role as RoleKey,
+    allowedModules: session.user.allowedModules ?? [],
   };
 }
 

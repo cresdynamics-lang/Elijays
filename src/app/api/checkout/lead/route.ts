@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { OrderStatus, OrderChannel } from "@prisma/client";
+import type { Fulfilment } from "@/lib/orders/fulfilment";
 
 type LeadBody = {
   token: string;
   name?: string;
   phone?: string;
   email?: string;
+  fulfilment?: Fulfilment;
   address?: string;
+  landmark?: string;
   notes?: string;
+  payPhone?: string;
   items?: { name: string; size?: string; qty: number; unitKes: number }[];
   subtotalKes?: number;
 };
@@ -33,12 +37,14 @@ export async function POST(req: NextRequest) {
   const name = body.name?.trim() || null;
   const phone = body.phone?.trim() || null;
   const email = body.email?.trim() || null;
+  const fulfilment: Fulfilment = body.fulfilment === "delivery" ? "delivery" : "pickup";
   const address = body.address?.trim() || null;
+  const landmark = body.landmark?.trim() || null;
   const notes = body.notes?.trim() || null;
+  const payPhone = body.payPhone?.trim() || phone;
   const subtotal = Math.max(0, Number(body.subtotalKes) || 0);
   const items = Array.isArray(body.items) ? body.items : [];
 
-  // Nothing typed yet — skip create
   if (!name && !phone && !email && !address) {
     return NextResponse.json({ ok: true, skipped: true });
   }
@@ -107,6 +113,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const deliveryNotes =
+    fulfilment === "pickup"
+      ? `Collect in shop — ${notes || "no notes"}`
+      : [address, landmark ? `Nearest building: ${landmark}` : null, notes]
+          .filter(Boolean)
+          .join(" · ");
+
   const orderData = {
     customerId,
     status: OrderStatus.ABANDONED,
@@ -116,11 +129,16 @@ export async function POST(req: NextRequest) {
     guestName: name,
     guestPhone: phone,
     guestEmail: email,
-    deliveryNotes: address,
+    deliveryNotes,
     internalNote: notes
       ? `Checkout in progress / abandoned. Notes: ${notes}`
       : "Checkout in progress — follow up if abandoned",
-    addressJson: address ? { line1: address } : undefined,
+    addressJson: {
+      fulfilment,
+      line1: address || undefined,
+      landmark: landmark || undefined,
+      payPhone: payPhone || undefined,
+    },
     checkoutToken: token,
   };
 

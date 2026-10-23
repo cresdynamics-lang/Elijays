@@ -1,15 +1,14 @@
 import { prisma } from "@/lib/db";
-import { AppointmentStatus, BespokeStatus, OrderStatus, ReviewStatus } from "@prisma/client";
+import { AppointmentStatus, BespokeStatus, OrderStatus } from "@prisma/client";
 
 export type NavBadges = {
   lowStock: number;
   orders: number;
   bespoke: number;
-  reviews: number;
 };
 
 export async function getNavBadges(): Promise<NavBadges> {
-  const [stockLevels, orders, bespokeNew, appointmentsRequested, reviewsPending] =
+  const [stockLevels, orders, bespokeNew, appointmentsRequested] =
     await Promise.all([
       prisma.stockLevel.findMany({
         where: { deletedAt: null },
@@ -27,9 +26,6 @@ export async function getNavBadges(): Promise<NavBadges> {
       prisma.appointment.count({
         where: { deletedAt: null, status: AppointmentStatus.REQUESTED },
       }),
-      prisma.review.count({
-        where: { deletedAt: null, status: ReviewStatus.PENDING },
-      }),
     ]);
 
   const lowStock = stockLevels.filter((s) => s.quantity <= s.alertAt).length;
@@ -38,6 +34,5 @@ export async function getNavBadges(): Promise<NavBadges> {
     lowStock,
     orders,
     bespoke: bespokeNew + appointmentsRequested,
-    reviews: reviewsPending,
   };
 }

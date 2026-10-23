@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PaymentMethod, PaymentStatus, OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { coopConfig, coopStkPush } from "@/lib/payments/coop";
+import {
+  coopConfig,
+  coopStkPush,
+  publicMpesaError,
+  publicMpesaPrompt,
+} from "@/lib/payments/coop";
 
 /**
  * Initiate Co-op Bank sandbox/production STK Push for a checkout order.
@@ -11,12 +16,7 @@ export async function POST(req: NextRequest) {
   const cfg = coopConfig();
   if (!cfg.configured) {
     return NextResponse.json(
-      {
-        error:
-          "Co-op Bank keys not set. Add COOP_CONSUMER_KEY and COOP_CONSUMER_SECRET (sandbox).",
-        callbackUrl: cfg.callbackUrl,
-        stkUrl: cfg.stkUrl,
-      },
+      { error: "M-Pesa is temporarily unavailable. Try again shortly." },
       { status: 503 },
     );
   }
@@ -40,15 +40,17 @@ export async function POST(req: NextRequest) {
   if (!phone) {
     return NextResponse.json({ error: "phone required" }, { status: 400 });
   }
+  if (!orderId && !token) {
+    return NextResponse.json(
+      { error: "Order not found — complete customer details first" },
+      { status: 404 },
+    );
+  }
 
   const order = await prisma.order.findFirst({
     where: {
       deletedAt: null,
-      ...(orderId
-        ? { id: orderId }
-        : token
-          ? { checkoutToken: token }
-          : { id: "__none__" }),
+      ...(orderId ? { id: orderId } : { checkoutToken: token }),
     },
   });
 
@@ -59,10 +61,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const amount = Math.max(
-    1,
-    Math.round(Number(body.amountKes) || order.totalKes || order.subtotalKes),
-  );
+  const amount = Math.max(1, Math.round(order.totalKes || order.subtotalKes));
 
   try {
     const stk = await coopStkPush({
@@ -90,7 +89,7 @@ export async function POST(req: NextRequest) {
         where: { id: order.id },
         data: {
           status: OrderStatus.NEW,
-          internalNote: "Co-op STK initiated",
+          internalNote: "M-Pesa PIN prompt sent",
         },
       });
     }
@@ -99,14 +98,15 @@ export async function POST(req: NextRequest) {
       ok: true,
       paymentId: payment.id,
       orderId: order.id,
-      checkoutRequestId: stk.checkoutRequestId,
-      messageReference: stk.messageReference,
-      customerMessage: stk.customerMessage,
-      callbackUrl: cfg.callbackUrl,
-      provider: "coop-bank",
+      customerMessage: publicMpesaPrompt(stk.customerMessage),
     });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Co-op STK failed";
-    return NextResponse.json({ error: message }, { status: 502 });
+    const raw = e instanceof Error ? e.message : "";
+    const message = publicMpesaError(raw);
+    const badPhone = /valid kenyan phone/i.test(raw);
+    return NextResponse.json(
+      { error: message },
+      { status: badPhone ? 400 : 502 },
+    );
   }
 }

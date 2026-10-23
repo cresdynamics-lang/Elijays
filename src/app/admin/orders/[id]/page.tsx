@@ -7,6 +7,7 @@ import { formatKes } from "@/components/admin/formatKes";
 import { format } from "date-fns";
 import { OrderStatus } from "@prisma/client";
 import { OrderStatusButtons } from "@/components/admin/OrderStatusButtons";
+import { fulfilmentLabel, parseAddressJson } from "@/lib/orders/fulfilment";
 
 const TIMELINE: OrderStatus[] = [
   OrderStatus.NEW,
@@ -146,6 +147,49 @@ export default async function OrderDetailPage({
           {order.internalNote ? (
             <Panel title="Internal note">
               <p className="text-sm text-ivory-muted">{order.internalNote}</p>
+            </Panel>
+          ) : null}
+          <Panel title="Fulfilment">
+            <p className="text-sm text-ivory">{fulfilmentLabel(order.addressJson)}</p>
+            {(() => {
+              const address = parseAddressJson(order.addressJson);
+              return (
+                <div className="mt-2 space-y-1 text-sm text-ivory-muted">
+                  {order.guestName ? <p>{order.guestName}</p> : null}
+                  {order.guestPhone ? <p>{order.guestPhone}</p> : null}
+                  {address.payPhone ? <p>M-Pesa: {address.payPhone}</p> : null}
+                  {address.fulfilment === "delivery" ? (
+                    <>
+                      {address.line1 ? <p>{address.line1}</p> : null}
+                      {address.landmark ? (
+                        <p>Nearest building: {address.landmark}</p>
+                      ) : null}
+                    </>
+                  ) : (
+                    <p>Collect in shop</p>
+                  )}
+                </div>
+              );
+            })()}
+          </Panel>
+          {order.checkoutToken ? (
+            <Panel title="Invoice">
+              <div className="flex flex-col gap-2 text-xs">
+                <Link href={`/invoice/${order.checkoutToken}`} className="text-gold">
+                  View invoice / receipt
+                </Link>
+                <a
+                  href={`/api/invoice/${order.checkoutToken}`}
+                  className="text-gold"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open PDF
+                </a>
+                <Link href={`/pay/${order.checkoutToken}`} className="text-gold">
+                  Payment link
+                </Link>
+              </div>
             </Panel>
           ) : null}
         </aside>

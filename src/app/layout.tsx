@@ -69,7 +69,7 @@ export default async function RootLayout({
             <MetaPageView />
             <CartProvider>
               <Nav />
-              <main className="flex-1 pb-16 md:pb-0">{children}</main>
+              <main className="flex-1 pb-16 print:pb-0 md:pb-0">{children}</main>
               <Footer />
               <MobileBar />
               <WhatsAppFab />

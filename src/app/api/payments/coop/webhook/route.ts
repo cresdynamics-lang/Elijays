@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import {
-  parseCoopCallback,
-  type CoopCallbackPayload,
-} from "@/lib/payments/coop";
+import { parseCoopCallback, parseCoopCallbackText } from "@/lib/payments/coop";
 
 /**
- * Co-op Bank STK callback (sandbox + production).
- * Register: https://elijays-mens-wear.co.ke/api/payments/coop/webhook
+ * Co-op Bank STK callback.
+ * Register: https://elijays-mens-wear.co.ke/api/payments/mpesa/callback
+ * Alias:    https://elijays-mens-wear.co.ke/api/payments/coop/webhook
  */
 export async function POST(req: NextRequest) {
-  let payload: CoopCallbackPayload;
-  try {
-    payload = (await req.json()) as CoopCallbackPayload;
-  } catch {
-    return NextResponse.json({ ResultCode: 1, ResultDesc: "Invalid JSON" });
+  const text = await req.text();
+  console.info("[coop/webhook]", req.nextUrl.pathname, text.slice(0, 500));
+  const payload = parseCoopCallbackText(text);
+  if (!payload) {
+    return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" });
   }
 
   const parsed = parseCoopCallback(payload);
@@ -35,6 +33,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" });
   }
 
+  if (parsed.pending) {
+    return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" });
+  }
+
   if (parsed.resultCode === 0) {
     await prisma.payment.update({
       where: { id: payment.id },
@@ -49,10 +51,10 @@ export async function POST(req: NextRequest) {
       where: { id: payment.orderId },
       data: {
         status: OrderStatus.PAID,
-        internalNote: `Co-op paid · ${parsed.receipt || parsed.providerRef}`,
+        internalNote: `M-Pesa paid · ${parsed.receipt || parsed.providerRef}`,
       },
     });
-  } else {
+  } else if (payment.status === PaymentStatus.PENDING) {
     await prisma.payment.update({
       where: { id: payment.id },
       data: { status: PaymentStatus.FAILED },
@@ -63,10 +65,5 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({
-    ok: true,
-    endpoint: "Co-op Bank STK callback",
-    path: "/api/payments/coop/webhook",
-    provider: "coop-bank",
-  });
+  return NextResponse.json({ ok: true });
 }

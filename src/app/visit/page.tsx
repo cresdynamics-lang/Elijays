@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { BRAND } from "@/lib/constants";
+import { BRAND, whatsappFittingUrl } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Visit Us",
@@ -74,9 +74,14 @@ export default function VisitPage() {
               >
                 Get directions
               </a>
-              <Link href="/bespoke" className="btn-ghost">
+              <a
+                href={whatsappFittingUrl()}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-ghost"
+              >
                 Book a fitting
-              </Link>
+              </a>
             </div>
           </div>
         </div>

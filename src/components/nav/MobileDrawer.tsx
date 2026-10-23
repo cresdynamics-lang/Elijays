@@ -184,6 +184,13 @@ export function MobileDrawer({
             <br />
             {BRAND.phone}
           </p>
+          <Link
+            href={secondary.account.href}
+            onClick={onClose}
+            className="w-full text-center font-[family-name:var(--font-jost)] text-[0.65rem] uppercase tracking-[0.18em] text-ivory/80"
+          >
+            {secondary.account.label}
+          </Link>
           <button
             type="button"
             onClick={onSearch}

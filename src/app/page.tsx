@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BRAND, TRUST_STRIP, formatKes } from "@/lib/constants";
+import { BRAND, TRUST_STRIP, formatKes, whatsappFittingUrl } from "@/lib/constants";
 import { getEnabledCategories } from "@/lib/navigation";
 import { CategoryCard } from "@/components/CategoryCard";
 import { completeLook, getNewArrivals, getProduct, looks } from "@/lib/products";
@@ -16,10 +16,10 @@ const HERO_MODEL = {
 };
 
 const OCCASIONS = [
-  { title: "The Boardroom", meta: "Suits · Shirts · Ties", href: "/lookbook#boardroom", image: "/hero/hero-model.webp" },
+  { title: "The Boardroom", meta: "Suits · Shirts · Ties", href: "/lookbook#boardroom", image: "/products/blazers.webp" },
   { title: "The Courtroom", meta: "Dark suits · White shirts", href: "/lookbook#courtroom", image: "/products/presidential-shirts.webp" },
   { title: "The Weekend", meta: "Vests · Printed shirts", href: "/lookbook#weekend", image: "/products/jackets-outer.webp" },
-  { title: "The Wedding", meta: "Three-piece · Paisley", href: "/lookbook", image: "/products/wa-001.webp" },
+  { title: "The Wedding", meta: "Three-piece · Paisley", href: "/lookbook", image: "/products/suits.webp" },
   { title: "The Evening", meta: "Knits · Dark denim", href: "/lookbook#quiet-power", image: "/products/jeans.webp" },
 ];
 
@@ -71,9 +71,14 @@ export default function HomePage() {
               <Link href="/suits" className="btn-gold">
                 Shop the collection
               </Link>
-              <Link href="/bespoke" className="btn-ghost">
+              <a
+                href={whatsappFittingUrl()}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-ghost"
+              >
                 Book a fitting
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -276,9 +281,14 @@ export default function HomePage() {
             <br />
             <span className="text-gold">Cut for you.</span>
           </h2>
-          <Link href="/bespoke" className="btn-gold mt-8 inline-flex">
+          <a
+            href={whatsappFittingUrl()}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-gold mt-8 inline-flex"
+          >
             Book your fitting
-          </Link>
+          </a>
         </div>
       </section>
 

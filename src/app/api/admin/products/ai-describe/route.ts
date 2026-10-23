@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth/session";
-import { canAccess } from "@/lib/auth/permissions";
+import { userCan } from "@/lib/auth/permissions";
 import { describeProductFromImage } from "@/lib/ai/product-from-image";
 
 export const runtime = "nodejs";
@@ -8,7 +8,7 @@ export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser();
-  if (!user || !canAccess(user.role, "products")) {
+  if (!userCan(user, "products")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

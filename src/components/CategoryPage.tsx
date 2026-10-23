@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
+import { whatsappFittingUrl } from "@/lib/constants";
 import type { Product } from "@/lib/products";
 
 type Props = {
@@ -120,8 +121,10 @@ export function CategoryPage({
                 <ProductCard key={p.id} product={p} />
               ))}
               {bespokeCard && (
-                <Link
-                  href="/bespoke"
+                <a
+                  href={whatsappFittingUrl()}
+                  target="_blank"
+                  rel="noreferrer"
                   className="relative aspect-[3/4] min-h-[420px] flex flex-col justify-end p-8 border border-[var(--line)] bg-gradient-to-br from-purple/20 via-noir-elevated to-noir overflow-hidden group"
                 >
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(232,206,150,0.12),transparent_50%)]" />
@@ -131,7 +134,7 @@ export function CategoryPage({
                   </h3>
                   <p className="whisper text-lg mt-3 relative">Have it made for you.</p>
                   <span className="btn-gold mt-8 w-fit relative">Book a fitting</span>
-                </Link>
+                </a>
               )}
             </div>
           </div>

@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { track } from "@/lib/analytics";
 import type { NavCategory } from "@/lib/navigation";
 import { getNeighborCategories, getWhatsAppStylistUrl } from "@/lib/navigation";
+import { whatsappFittingUrl } from "@/lib/constants";
 import type { Product } from "@/lib/products";
 
 type Chip = { label: string; value: string };
@@ -162,8 +163,10 @@ export function CategoryShell({
                 <ProductCard key={p.id} product={p} />
               ))}
               {bespokeCard && (
-                <Link
-                  href="/bespoke"
+                <a
+                  href={whatsappFittingUrl()}
+                  target="_blank"
+                  rel="noreferrer"
                   className="group relative flex min-h-[420px] aspect-[3/4] flex-col justify-end overflow-hidden border border-[var(--line)] bg-gradient-to-br from-purple/20 via-noir-elevated to-noir p-8"
                 >
                   <p className="eyebrow relative">Bespoke</p>
@@ -176,7 +179,7 @@ export function CategoryShell({
                   <span className="btn-gold relative mt-8 w-fit">
                     Book a fitting
                   </span>
-                </Link>
+                </a>
               )}
             </div>
           </div>

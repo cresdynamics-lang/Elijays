@@ -21,16 +21,17 @@ enum RoleKey {
 }
 
 model User {
-  id           String    @id @default(uuid()) @db.Uuid
-  email        String    @unique
-  name         String
-  passwordHash String    @map("password_hash")
-  role         RoleKey   @default(SALES)
-  active       Boolean   @default(true)
-  lastSignInAt DateTime? @map("last_sign_in_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  id             String    @id @default(uuid()) @db.Uuid
+  email          String    @unique
+  name           String
+  passwordHash   String    @map("password_hash")
+  role           RoleKey   @default(SALES)
+  allowedModules String[]  @default([]) @map("allowed_modules")
+  active         Boolean   @default(true)
+  lastSignInAt   DateTime? @map("last_sign_in_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
 
   sessions         Session[]
   auditLogs        AuditLog[]       @relation("AuditActor")
@@ -212,6 +213,7 @@ model ProductImage {
   id        String    @id @default(uuid()) @db.Uuid
   productId String    @map("product_id") @db.Uuid
   mediaId   String    @map("media_id") @db.Uuid
+  colour    String?
   sortOrder Int       @default(0) @map("sort_order")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -221,6 +223,7 @@ model ProductImage {
   media   MediaAsset @relation(fields: [mediaId], references: [id])
 
   @@index([productId])
+  @@index([productId, colour])
   @@map("product_images")
 }
 
@@ -505,16 +508,18 @@ model Return {
 // ─── Customers ───────────────────────────────────────────────────────────────
 
 model Customer {
-  id         String    @id @default(uuid()) @db.Uuid
-  firstName  String    @map("first_name")
-  lastName   String    @map("last_name")
-  email      String?
-  phone      String?
-  tags       String[]  @default([])
-  notes      String?
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
-  deletedAt  DateTime? @map("deleted_at")
+  id           String    @id @default(uuid()) @db.Uuid
+  firstName    String    @map("first_name")
+  lastName     String    @map("last_name")
+  email        String?
+  phone        String?
+  passwordHash String?   @map("password_hash")
+  lastSignInAt DateTime? @map("last_sign_in_at")
+  tags         String[]  @default([])
+  notes        String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
 
   addresses     Address[]
   measurements  Measurement[]
@@ -525,10 +530,26 @@ model Customer {
   appointments  Appointment[]
   bespokeRequests BespokeRequest[]
   reviews       Review[]
+  sessions      CustomerSession[]
 
   @@index([phone])
   @@index([email])
   @@map("customers")
+}
+
+model CustomerSession {
+  id         String    @id @default(uuid()) @db.Uuid
+  customerId String    @map("customer_id") @db.Uuid
+  token      String    @unique
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_sessions")
 }
 
 model Address {

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { BRAND, whatsappOrderUrl } from "@/lib/constants";
+import { BRAND, shopLocationBlock, whatsappFittingUrl, whatsappOrderUrl } from "@/lib/constants";
 
 const STEPS = [
   {
@@ -39,7 +39,7 @@ export default function BespokePage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const msg = `Bespoke fitting request\nName: ${form.name}\nPhone: ${form.phone}\nOccasion: ${form.occasion}\nPreferred: ${form.date} ${form.time}`;
+    const msg = `Bespoke fitting request\nName: ${form.name}\nPhone: ${form.phone}\nOccasion: ${form.occasion}\nPreferred: ${form.date} ${form.time}\n\n${shopLocationBlock()}`;
     window.open(whatsappOrderUrl(msg), "_blank");
     setSent(true);
   };
@@ -63,7 +63,12 @@ export default function BespokePage() {
             <br />
             <span className="text-gold">Cut for you.</span>
           </h1>
-          <a href="#book" className="btn-gold mt-10 inline-flex">
+          <a
+            href={whatsappFittingUrl()}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-gold mt-10 inline-flex"
+          >
             Book your fitting
           </a>
         </div>

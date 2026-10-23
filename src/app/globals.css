@@ -307,6 +307,18 @@ img {
   transition: border-color 0.3s ease;
 }
 
+.checkout-form .input-field {
+  font-size: 0.8125rem;
+  padding: 0.55rem 0;
+}
+
+@media (min-width: 768px) {
+  .checkout-form .input-field {
+    font-size: 0.95rem;
+    padding: 0.9rem 0;
+  }
+}
+
 .input-field:focus {
   border-color: var(--gold);
 }
@@ -416,15 +428,27 @@ img {
 @media print {
   aside,
   header,
-  button {
+  nav,
+  footer,
+  .no-print,
+  .print\:hidden {
     display: none !important;
   }
-  body {
+  body,
+  .atmosphere {
     background: white !important;
-    color: black !important;
+    color: #111 !important;
   }
-  .report-print-root {
+  .report-print-root,
+  .invoice-sheet {
     display: block !important;
+    background: white !important;
+    color: #111 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  a[href]::after {
+    content: none !important;
   }
 }
 

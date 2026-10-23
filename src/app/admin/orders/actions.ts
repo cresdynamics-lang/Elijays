@@ -4,12 +4,12 @@ import { revalidatePath } from "next/cache";
 import { OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/session";
-import { canAccess } from "@/lib/auth/permissions";
+import { userCan } from "@/lib/auth/permissions";
 import { writeAudit } from "@/lib/admin/audit";
 
 export async function updateOrderStatus(id: string, status: OrderStatus) {
   const user = await getSessionUser();
-  if (!user || !canAccess(user.role, "orders")) throw new Error("Forbidden");
+  if (!user || !userCan(user, "orders")) throw new Error("Forbidden");
   const before = await prisma.order.findFirst({ where: { id, deletedAt: null } });
   if (!before) return;
   await prisma.order.update({ where: { id }, data: { status } });

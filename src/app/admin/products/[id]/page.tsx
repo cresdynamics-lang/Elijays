@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -6,6 +5,8 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { formatKes } from "@/components/admin/formatKes";
 import { archiveProduct, updateProduct } from "../actions";
 import { ProductAiAssist } from "@/components/admin/ProductAiAssist";
+import { ProductStockEditor } from "../ProductStockEditor";
+import { whatsappProductUpdateUrl } from "@/lib/constants";
 
 export default async function ProductEditPage({
   params,
@@ -26,9 +27,55 @@ export default async function ProductEditPage({
           },
         },
       },
+      images: {
+        where: { deletedAt: null },
+        include: { media: true },
+        orderBy: { sortOrder: "asc" },
+      },
     },
   });
   if (!product) notFound();
+
+  const colourNames = [
+    ...new Set(
+      product.variants
+        .map((v) => v.colour)
+        .filter((c): c is string => Boolean(c)),
+    ),
+  ];
+  const sizeNames = [
+    ...new Set(
+      product.variants.map((v) => v.size).filter((s): s is string => Boolean(s)),
+    ),
+  ];
+  const colourImages = new Map<string, string>();
+  for (const image of product.images) {
+    if (image.colour && image.media.url && !colourImages.has(image.colour)) {
+      colourImages.set(image.colour, image.media.url);
+    }
+  }
+  const fallbackImage = product.images[0]?.media.url ?? null;
+  const editorColours =
+    colourNames.length > 0
+      ? colourNames.map((name) => ({
+          name,
+          imageUrl: colourImages.get(name) ?? fallbackImage,
+        }))
+      : [{ name: "", imageUrl: fallbackImage }];
+  const quantities = product.variants.map((v) => {
+    const shop =
+      v.stockLevels.find((l) => l.location.code === "SHOP") ??
+      v.stockLevels[0];
+    return {
+      colour: v.colour ?? "",
+      size: v.size ?? "",
+      quantity: shop?.quantity ?? 0,
+    };
+  });
+  const alertAt =
+    product.variants
+      .flatMap((v) => v.stockLevels)
+      .find((l) => l.location.code === "SHOP")?.alertAt ?? 2;
 
   const save = updateProduct.bind(null, product.id);
   const archive = archiveProduct.bind(null, product.id);
@@ -102,41 +149,29 @@ export default async function ProductEditPage({
               >
                 Save changes
               </button>
+              <a
+                href={whatsappProductUpdateUrl({
+                  name: product.name,
+                  sku: product.sku,
+                  shortLine: product.shortLine,
+                  priceKes: product.priceKes,
+                })}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-line px-5 py-2 text-xs uppercase tracking-widest text-ivory-muted hover:text-gold"
+              >
+                Test on WhatsApp
+              </a>
             </div>
           </form>
 
-          <section className="rounded-xl border border-line bg-noir-soft/40 p-6">
-            <h2 className="mb-4 text-xs uppercase tracking-widest text-ivory-faint">
-              Variants and stock
-            </h2>
-            <ul className="divide-y divide-line/60">
-              {product.variants.map((v) => {
-                const shop =
-                  v.stockLevels.find((l) => l.location.code === "SHOP")
-                    ?.quantity ?? 0;
-                const website =
-                  v.stockLevels.find((l) => l.location.code === "WEB")
-                    ?.quantity ?? 0;
-                return (
-                  <li
-                    key={v.id}
-                    className="grid grid-cols-4 gap-2 py-3 text-sm text-ivory"
-                  >
-                    <span>{v.colour ?? "—"}</span>
-                    <span>{v.size ?? "—"}</span>
-                    <span className="text-ivory-muted">Shop {shop}</span>
-                    <span className="text-ivory-muted">Web {website}</span>
-                  </li>
-                );
-              })}
-            </ul>
-            <Link
-              href="/admin/inventory"
-              className="mt-4 inline-block text-xs text-gold hover:underline"
-            >
-              Manage inventory →
-            </Link>
-          </section>
+          <ProductStockEditor
+            productId={product.id}
+            colours={editorColours}
+            sizes={sizeNames}
+            quantities={quantities}
+            alertAt={alertAt}
+          />
         </div>
 
         <aside className="space-y-6">

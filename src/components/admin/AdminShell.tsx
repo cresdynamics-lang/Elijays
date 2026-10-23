@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { SessionUser } from "@/lib/auth/session";
-import { ROLE_LABELS, canAccess } from "@/lib/auth/permissions";
+import { accessLabel, userCan } from "@/lib/auth/permissions";
 import type { NavBadges } from "@/lib/admin/badges";
 import { ADMIN_NAV_GROUPS } from "@/components/admin/admin-nav";
 import { cn } from "@/components/admin/cn";
@@ -103,7 +103,7 @@ export function AdminShell({ user, badges, children }: Props) {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {ADMIN_NAV_GROUPS.map((group) => {
             const items = group.items.filter((item) =>
-              canAccess(user.role, item.module),
+              userCan(user, item.module),
             );
             if (items.length === 0) return null;
             return (
@@ -151,7 +151,7 @@ export function AdminShell({ user, badges, children }: Props) {
         <div className="border-t border-line px-4 py-3">
           <p className="mb-3 px-1 text-xs text-ivory-muted">
             <span className="text-ivory">{user.name}</span>{" "}
-            <span className="text-ivory-faint">({ROLE_LABELS[user.role]})</span>
+            <span className="text-ivory-faint">({accessLabel(user)})</span>
           </p>
           <LogoutButton />
         </div>
@@ -186,7 +186,7 @@ export function AdminShell({ user, badges, children }: Props) {
           <p className="hidden text-xs text-ivory-muted md:block">
             Open now ·{" "}
             <span className="text-ivory">{user.name}</span>{" "}
-            <span className="text-ivory-faint">({ROLE_LABELS[user.role]})</span>
+            <span className="text-ivory-faint">({accessLabel(user)})</span>
           </p>
         </header>
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">

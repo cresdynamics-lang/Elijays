@@ -42,3 +42,52 @@ export function formatKes(amount: number): string {
 export function whatsappOrderUrl(message: string): string {
   return `${BRAND.whatsapp}?text=${encodeURIComponent(message)}`;
 }
+
+export function shopLocationBlock(): string {
+  return [
+    `Location: ${BRAND.address.street}`,
+    `${BRAND.address.junction}, ${BRAND.address.city}`,
+    `Hours: ${BRAND.hours}`,
+    `Map: ${BRAND.mapsUrl}`,
+  ].join("\n");
+}
+
+export function whatsappFittingUrl(extra?: string): string {
+  const msg = [
+    "Hello ELIJAYS — I'd like to book a fitting.",
+    extra?.trim() ? extra.trim() : "",
+    "Please confirm an available time.",
+    "",
+    shopLocationBlock(),
+  ]
+    .filter((line) => line !== undefined)
+    .join("\n");
+  return whatsappOrderUrl(msg);
+}
+
+export function whatsappProductUpdateUrl(product: {
+  name: string;
+  sku?: string | null;
+  shortLine?: string | null;
+  priceKes?: number | string | null;
+}): string {
+  const price =
+    product.priceKes !== undefined &&
+    product.priceKes !== null &&
+    product.priceKes !== ""
+      ? formatKes(Number(product.priceKes) || 0)
+      : "";
+  const msg = [
+    "ELIJAYS product update — please confirm this listing.",
+    "",
+    product.name,
+    product.shortLine?.trim() || "",
+    product.sku ? `SKU ${product.sku}` : "",
+    price,
+    "",
+    shopLocationBlock(),
+  ]
+    .filter((line) => line !== "")
+    .join("\n");
+  return whatsappOrderUrl(msg);
+}

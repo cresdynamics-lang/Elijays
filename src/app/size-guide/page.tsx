@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { whatsappFittingUrl } from "@/lib/constants";
 
 export const metadata: Metadata = { title: "Size Guide" };
 
@@ -50,9 +50,14 @@ export default function SizeGuidePage() {
           </p>
         </div>
 
-        <Link href="/bespoke" className="btn-gold mt-10 inline-flex">
+        <a
+          href={whatsappFittingUrl()}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-gold mt-10 inline-flex"
+        >
           Book a fitting
-        </Link>
+        </a>
       </div>
     </div>
   );

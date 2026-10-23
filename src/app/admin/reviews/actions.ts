@@ -4,12 +4,11 @@ import { revalidatePath } from "next/cache";
 import { ReviewStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/session";
-import { canAccess } from "@/lib/auth/permissions";
 import { writeAudit } from "@/lib/admin/audit";
 
 export async function setReviewStatus(id: string, status: "APPROVED" | "HIDDEN") {
   const user = await getSessionUser();
-  if (!user || !canAccess(user.role, "reviews")) {
+  if (!user) {
     throw new Error("Forbidden");
   }
   const before = await prisma.review.findFirst({ where: { id, deletedAt: null } });

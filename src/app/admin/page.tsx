@@ -40,17 +40,33 @@ export default async function AdminDashboardPage() {
       />
 
       <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {kpis.map((k) => (
-          <div
-            key={k.label}
-            className="rounded-xl border border-line bg-noir-soft/50 px-4 py-5"
-          >
-            <p className="text-[11px] uppercase tracking-widest text-ivory-faint">
-              {k.label}
-            </p>
-            <p className="mt-2 font-display text-2xl text-ivory">{k.value}</p>
-          </div>
-        ))}
+        {kpis.map((k) => {
+          const href = k.label === "Low stock" ? "/admin/stock" : null;
+          const inner = (
+            <>
+              <p className="text-[11px] uppercase tracking-widest text-ivory-faint">
+                {k.label}
+              </p>
+              <p className="mt-2 font-display text-2xl text-ivory">{k.value}</p>
+            </>
+          );
+          return href ? (
+            <Link
+              key={k.label}
+              href={href}
+              className="rounded-xl border border-line bg-noir-soft/50 px-4 py-5 transition hover:border-gold/30"
+            >
+              {inner}
+            </Link>
+          ) : (
+            <div
+              key={k.label}
+              className="rounded-xl border border-line bg-noir-soft/50 px-4 py-5"
+            >
+              {inner}
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid gap-8 xl:grid-cols-3">

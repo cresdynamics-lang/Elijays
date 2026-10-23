@@ -19,7 +19,7 @@ export default function BagPage() {
   if (count === 0) {
     return (
       <div className="atmosphere min-h-screen pt-36 pb-28 px-5 text-center">
-        <h1 className="display text-5xl">Your bag is empty</h1>
+        <h1 className="display text-5xl">Your cart is empty</h1>
         <p className="whisper text-xl mt-4">The wardrobe is waiting.</p>
         <Link href="/suits" className="btn-gold mt-10 inline-flex">
           Shop the collection
@@ -31,7 +31,7 @@ export default function BagPage() {
   return (
     <div className="atmosphere min-h-screen pt-28 md:pt-36 pb-28">
       <div className="mx-auto max-w-[1100px] px-5 md:px-8">
-        <h1 className="display text-5xl md:text-6xl">Your Bag</h1>
+        <h1 className="display text-5xl md:text-6xl">Your Cart</h1>
         <p className="mt-3 text-ivory/50 text-sm tracking-[0.15em] uppercase">
           {count} {count === 1 ? "piece" : "pieces"}
         </p>

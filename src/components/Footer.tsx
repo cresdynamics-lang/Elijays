@@ -14,7 +14,7 @@ export function Footer() {
   const colB = categories.slice(mid);
 
   return (
-    <footer className="border-t border-[var(--line)] bg-noir-soft">
+    <footer className="border-t border-[var(--line)] bg-noir-soft print:hidden">
       <div className="mx-auto max-w-[1600px] px-5 py-16 md:px-8 lg:px-12 lg:py-24">
         <div className="grid gap-14 lg:grid-cols-12">
           <div className="lg:col-span-4">
