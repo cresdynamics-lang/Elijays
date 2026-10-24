@@ -4,8 +4,8 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { formatKes } from "@/components/admin/formatKes";
 import { archiveProduct, updateProduct } from "../actions";
-import { ProductAiAssist } from "@/components/admin/ProductAiAssist";
 import { ProductStockEditor } from "../ProductStockEditor";
+import { ProductPhotos } from "../ProductPhotos";
 import { whatsappProductUpdateUrl } from "@/lib/constants";
 import {
   SaveButton,
@@ -101,8 +101,10 @@ export default async function ProductEditPage({
         actionLabel="Back to list"
       />
       <SaveScope>
-        <div className="grid gap-8 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+        {/* grid-cols-1 + min-w-0: without them the column grows to the stock
+            table's width on phones and the form runs off-screen. */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="min-w-0 space-y-6 lg:col-span-2">
             <SaveForm
               id="product-details"
               action={save}
@@ -158,6 +160,9 @@ export default async function ProductEditPage({
                   Category
                 </span>
                 <select
+                  // A select ignores defaultValue changes after mount; re-key it
+                  // on each save so it shows the saved value, not the old one.
+                  key={`category-${product.updatedAt.getTime()}`}
                   name="categoryId"
                   defaultValue={product.categoryId ?? ""}
                   className="mt-1 w-full rounded-lg border border-line bg-noir px-3 py-2 text-ivory"
@@ -206,8 +211,15 @@ export default async function ProductEditPage({
             />
           </div>
 
-          <aside className="space-y-6">
-            <ProductAiAssist productId={product.id} />
+          <aside className="min-w-0 space-y-6">
+            <ProductPhotos
+              productId={product.id}
+              photos={product.images.map((image) => ({
+                id: image.id,
+                url: image.media.url,
+                colour: image.colour,
+              }))}
+            />
             {/* Fields here belong to the main product form (form="product-details"),
               so Update saves the same values as Save changes. */}
             <div className="rounded-xl border border-line bg-noir-soft/40 p-6">
@@ -220,6 +232,7 @@ export default async function ProductEditPage({
                   Status
                 </span>
                 <select
+                  key={`status-${product.updatedAt.getTime()}`}
                   name="status"
                   form="product-details"
                   defaultValue={product.status}

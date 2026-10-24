@@ -410,3 +410,59 @@ export async function saveProductStock(productId: string, input: StockSaveInput)
   revalidatePath("/admin/inventory");
   revalidatePath("/admin");
 }
+
+async function requireProductEditor() {
+  const user = await getSessionUser();
+  if (!user || !userCan(user, "products")) throw new Error("Forbidden");
+  return user;
+}
+
+function revalidateProduct(productId: string) {
+  revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${productId}`);
+  revalidatePath("/", "layout"); // storefront reads products from the database
+}
+
+/** Make one photo the product's main (first) photo, keeping the others' order. */
+export async function setMainProductImage(productId: string, imageId: string) {
+  const user = await requireProductEditor();
+  const images = await prisma.productImage.findMany({
+    where: { productId, deletedAt: null },
+    orderBy: { sortOrder: "asc" },
+  });
+  const chosen = images.find((i) => i.id === imageId);
+  if (!chosen) throw new Error("Photo not found");
+
+  const ordered = [chosen, ...images.filter((i) => i.id !== imageId)];
+  await prisma.$transaction(
+    ordered.map((image, index) =>
+      prisma.productImage.update({
+        where: { id: image.id },
+        data: { sortOrder: index },
+      }),
+    ),
+  );
+  await writeAudit({
+    actorId: user.id,
+    action: "Set main product photo",
+    entityType: "product",
+    entityId: productId,
+  });
+  revalidateProduct(productId);
+}
+
+export async function removeProductImage(productId: string, imageId: string) {
+  const user = await requireProductEditor();
+  const result = await prisma.productImage.updateMany({
+    where: { id: imageId, productId, deletedAt: null },
+    data: { deletedAt: new Date() },
+  });
+  if (result.count === 0) throw new Error("Photo not found");
+  await writeAudit({
+    actorId: user.id,
+    action: "Removed product photo",
+    entityType: "product",
+    entityId: productId,
+  });
+  revalidateProduct(productId);
+}

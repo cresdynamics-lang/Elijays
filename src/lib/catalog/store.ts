@@ -26,6 +26,19 @@ const CATEGORY_FROM_DB: Record<string, Category> = {
   jeans: "jeans",
 };
 
+// Storefront category -> database category slug (as the seed mapped them).
+const DB_FROM_CATEGORY: Record<Category, string> = {
+  suits: "suits",
+  jackets: "outerwear",
+  sweaters: "knitwear",
+  shirts: "shirts",
+  trousers: "trousers",
+  jeans: "jeans",
+  belts: "accessories",
+  ties: "accessories",
+  socks: "accessories",
+};
+
 // Name keywords, checked in order, for products saved without a category.
 const CATEGORY_FROM_NAME: [RegExp, Category][] = [
   [/\btie/i, "ties"],
@@ -80,7 +93,14 @@ async function loadFromDb(): Promise<Product[] | null> {
 
     return rows
       .map((row): Product => {
-        const file = fileBySlug.get(row.slug);
+        const fileEntry = fileBySlug.get(row.slug);
+        // The admin category wins: once it's changed away from the file's, the
+        // file's category-specific details (subcategory, pairings) no longer apply.
+        const categoryChanged =
+          !!fileEntry &&
+          !!row.category &&
+          DB_FROM_CATEGORY[fileEntry.category] !== row.category.slug;
+        const file = categoryChanged ? undefined : fileEntry;
         const dbImages = unique(row.images.map((i) => i.media.url));
         const image =
           dbImages[0] ?? file?.image ?? "/brand/elijays-storefront.webp";
