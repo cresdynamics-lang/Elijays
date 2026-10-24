@@ -10,6 +10,7 @@ import {
   Th,
 } from "@/components/admin/DataTable";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { ProductThumb } from "@/components/admin/ProductThumb";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,15 @@ export default async function StockPage() {
   const variants = await prisma.productVariant.findMany({
     where: { deletedAt: null, product: { deletedAt: null } },
     include: {
-      product: true,
+      product: {
+        include: {
+          images: {
+            where: { deletedAt: null },
+            include: { media: true },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      },
       stockLevels: {
         where: { deletedAt: null },
         include: { location: true },
@@ -35,10 +44,18 @@ export default async function StockPage() {
 
   const rows = variants.map((v) => {
     const stock = shopQty(v.stockLevels);
+    const images = v.product.images;
+    // Display photo = first image, as on the storefront; a colour row prefers
+    // that colour's own photo when one was uploaded.
+    const photo = images[0]?.media.url ?? null;
+    const colourPhoto =
+      images.find((img) => v.colour && img.colour === v.colour)?.media.url ?? photo;
     return {
       id: v.id,
       productId: v.productId,
       name: v.product.name,
+      photo,
+      colourPhoto,
       sku: v.sku,
       colour: v.colour ?? "—",
       size: v.size ?? "—",
@@ -52,12 +69,20 @@ export default async function StockPage() {
   const low = rows.filter((r) => r.low);
   const products = new Map<
     string,
-    { id: string; name: string; units: number; low: number; status: string }
+    {
+      id: string;
+      name: string;
+      photo: string | null;
+      units: number;
+      low: number;
+      status: string;
+    }
   >();
   for (const row of rows) {
     const current = products.get(row.productId) ?? {
       id: row.productId,
       name: row.name,
+      photo: row.photo,
       units: 0,
       low: 0,
       status: row.status,
@@ -90,7 +115,15 @@ export default async function StockPage() {
           ) : (
             low.map((row) => (
               <tr key={row.id}>
-                <Td className="text-ivory">{row.name}</Td>
+                <Td className="text-ivory">
+                  <div className="flex items-center gap-3">
+                    <ProductThumb
+                      href={`/admin/products/${row.productId}#stock`}
+                      src={row.colourPhoto}
+                    />
+                    <span>{row.name}</span>
+                  </div>
+                </Td>
                 <Td>{row.colour}</Td>
                 <Td>{row.size}</Td>
                 <Td className="text-amber-200">{row.quantity}</Td>
@@ -124,7 +157,15 @@ export default async function StockPage() {
           ) : (
             Array.from(products.values()).map((p) => (
               <tr key={p.id}>
-                <Td className="text-ivory">{p.name}</Td>
+                <Td className="text-ivory">
+                  <div className="flex items-center gap-3">
+                    <ProductThumb
+                      href={`/admin/products/${p.id}#stock`}
+                      src={p.photo}
+                    />
+                    <span>{p.name}</span>
+                  </div>
+                </Td>
                 <Td>{p.units}</Td>
                 <Td className={p.low > 0 ? "text-amber-200" : ""}>
                   {p.low > 0 ? p.low : "—"}

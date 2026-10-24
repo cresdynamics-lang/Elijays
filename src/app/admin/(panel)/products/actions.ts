@@ -54,6 +54,7 @@ export async function createProduct(formData: FormData) {
   });
 
   revalidatePath("/admin/products");
+  revalidatePath("/", "layout"); // storefront reads products from the database
   redirect(`/admin/products/${product.id}`);
 }
 
@@ -96,6 +97,7 @@ export async function updateProduct(id: string, formData: FormData) {
   });
 
   revalidatePath("/admin/products");
+  revalidatePath("/", "layout"); // storefront reads products from the database
   revalidatePath(`/admin/products/${id}`);
   revalidatePath("/admin");
 }
@@ -141,6 +143,7 @@ export async function autosaveProduct(input: {
       },
     });
     revalidatePath("/admin/products");
+    revalidatePath("/", "layout"); // storefront reads products from the database
     return { id: updated.id };
   }
 
@@ -169,6 +172,7 @@ export async function autosaveProduct(input: {
   });
 
   revalidatePath("/admin/products");
+  revalidatePath("/", "layout"); // storefront reads products from the database
   return { id: created.id };
 }
 
@@ -186,6 +190,7 @@ export async function publishProduct(id: string) {
     entityId: id,
   });
   revalidatePath("/admin/products");
+  revalidatePath("/", "layout"); // storefront reads products from the database
   revalidatePath(`/admin/products/${id}`);
 }
 
@@ -206,6 +211,7 @@ export async function archiveProduct(id: string) {
     entityLabel: before.name,
   });
   revalidatePath("/admin/products");
+  revalidatePath("/", "layout"); // storefront reads products from the database
   revalidatePath(`/admin/products/${id}`);
 }
 
@@ -389,6 +395,7 @@ export async function saveProductStock(productId: string, input: StockSaveInput)
   });
 
   revalidatePath("/admin/products");
+  revalidatePath("/", "layout"); // storefront reads products from the database
   revalidatePath(`/admin/products/${productId}`);
   revalidatePath("/admin/stock");
   revalidatePath("/admin/inventory");

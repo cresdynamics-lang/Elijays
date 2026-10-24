@@ -34,12 +34,6 @@ export const ADMIN_NAV_GROUPS: NavGroupConfig[] = [
     items: [
       { label: "Orders", href: "/admin/orders", module: "orders", badgeKey: "orders" },
       { label: "Payments", href: "/admin/payments", module: "orders" },
-      {
-        label: "Bespoke and Fittings",
-        href: "/admin/bespoke",
-        module: "bespoke",
-        badgeKey: "bespoke",
-      },
       { label: "Customers", href: "/admin/customers", module: "customers" },
     ],
   },
@@ -47,7 +41,6 @@ export const ADMIN_NAV_GROUPS: NavGroupConfig[] = [
     title: "CONTENT",
     items: [
       { label: "Journal (Blog)", href: "/admin/journal", module: "journal" },
-      { label: "Pages and Sections", href: "/admin/pages", module: "pages" },
     ],
   },
   {

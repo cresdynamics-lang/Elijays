@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BRAND, formatKes, whatsappOrderUrl } from "@/lib/constants";
-import { getProduct, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
+import { useCatalog } from "@/lib/catalog/CatalogProvider";
 import { getProductTags, tagLabel } from "@/lib/productTags";
 import { useCart } from "@/lib/cart";
 import { trackMeta } from "@/lib/analytics";
@@ -12,6 +13,7 @@ import { MetaViewContent } from "@/components/MetaEvents";
 
 export function ProductDetail({ product }: { product: Product }) {
   const { addItem, toggleWishlist, wishlist } = useCart();
+  const { getProduct } = useCatalog();
   const images = product.images?.length ? product.images : [product.image];
   const [activeImg, setActiveImg] = useState(0);
   const [size, setSize] = useState(product.sizes?.[2] || product.sizes?.[0] || "");
@@ -25,7 +27,7 @@ export function ProductDetail({ product }: { product: Product }) {
       (product.pairsWith || [])
         .map((s) => getProduct(s))
         .filter(Boolean) as Product[],
-    [product]
+    [product, getProduct]
   );
 
   const waMessage = `Hello ELIJAYS — I'd like to order:\n${product.name}${size ? ` · Size ${size}` : ""}${colour ? ` · ${colour}` : ""}\n${formatKes(product.price)}`;

@@ -10,6 +10,8 @@ import { StructuredData } from "@/components/StructuredData";
 import { MetaPixel } from "@/components/MetaPixel";
 import { MetaPageView } from "@/components/MetaEvents";
 import { SITE_URL } from "@/lib/constants";
+import { getCatalogProducts } from "@/lib/catalog/store";
+import { CatalogProvider } from "@/lib/catalog/CatalogProvider";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -53,6 +55,7 @@ export default async function RootLayout({
 }>) {
   const h = await headers();
   const isAdmin = h.get("x-admin") === "1";
+  const catalogProducts = isAdmin ? [] : await getCatalogProducts();
 
   return (
     <html
@@ -67,13 +70,15 @@ export default async function RootLayout({
             <StructuredData />
             <MetaPixel />
             <MetaPageView />
-            <CartProvider>
-              <Nav />
-              <main className="flex-1 pb-16 print:pb-0 md:pb-0">{children}</main>
-              <Footer />
-              <MobileBar />
-              <WhatsAppFab />
-            </CartProvider>
+            <CatalogProvider products={catalogProducts}>
+              <CartProvider>
+                <Nav />
+                <main className="flex-1 pb-16 print:pb-0 md:pb-0">{children}</main>
+                <Footer />
+                <MobileBar />
+                <WhatsAppFab />
+              </CartProvider>
+            </CatalogProvider>
           </>
         )}
       </body>

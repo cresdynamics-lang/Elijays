@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { products, getBestsellers } from "@/lib/products";
+import { getCatalog } from "@/lib/catalog/store";
 import { ProductCard } from "@/components/ProductCard";
 import { MetaBrowse } from "@/components/MetaEvents";
 
@@ -9,7 +9,8 @@ export const metadata = {
     "ELIJAYS bestsellers — the pieces men re-order. Suits, shirts and finishing details from Muindi Mbingu Street.",
 };
 
-export default function SalePage() {
+export default async function SalePage() {
+  const { products, getBestsellers } = await getCatalog();
   const bestsellers = getBestsellers();
 
   return (

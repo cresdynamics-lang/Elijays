@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CategoryShell } from "@/components/CategoryShell";
 import { getCategoryById } from "@/lib/navigation";
-import { getProductsBySubcategory, shirtFamilies } from "@/lib/products";
+import { shirtFamilies } from "@/lib/products";
+import { getCatalog } from "@/lib/catalog/store";
 
 type Props = { params: Promise<{ family: string }> };
 
@@ -27,6 +28,7 @@ export default async function ShirtFamilyPage({ params }: Props) {
   if (!shirts || !familyData) notFound();
 
   const link = shirts.links.find((l) => l.href.endsWith(`/${family}`));
+  const { getProductsBySubcategory } = await getCatalog();
   let list = getProductsBySubcategory("shirts", familyData.subcategory);
   if (family === "printed") {
     list = [

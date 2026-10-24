@@ -7,10 +7,8 @@ export type AdminModule =
   | "inventory"
   | "collections"
   | "orders"
-  | "bespoke"
   | "customers"
   | "journal"
-  | "pages"
   | "media"
   | "faqs"
   | "reports"
@@ -25,10 +23,8 @@ const ALL: AdminModule[] = [
   "inventory",
   "collections",
   "orders",
-  "bespoke",
   "customers",
   "journal",
-  "pages",
   "media",
   "faqs",
   "reports",
@@ -41,20 +37,18 @@ const ROLE_MODULES: Record<RoleKey, AdminModule[]> = {
   OWNER: ALL,
   MANAGER: ALL.filter((m) => !["settings", "users", "audit"].includes(m)),
   CATALOGUE: ["dashboard", "products", "categories", "collections", "media", "inventory"],
-  EDITOR: ["dashboard", "journal", "pages", "faqs", "media"],
-  SALES: ["dashboard", "orders", "customers", "bespoke"],
+  EDITOR: ["dashboard", "journal", "faqs", "media"],
+  SALES: ["dashboard", "orders", "customers"],
   STOCK: ["dashboard", "inventory"],
-  TAILOR: ["dashboard", "bespoke", "customers"],
+  TAILOR: ["dashboard", "customers"],
 };
 
 export const STAFF_PERMISSION_OPTIONS: { id: AdminModule; label: string }[] = [
   { id: "products", label: "Products" },
   { id: "inventory", label: "Stock" },
   { id: "orders", label: "Orders" },
-  { id: "bespoke", label: "Bespoke and fittings" },
   { id: "customers", label: "Customers" },
   { id: "journal", label: "Blog" },
-  { id: "pages", label: "Pages" },
   { id: "media", label: "Media" },
   { id: "faqs", label: "FAQs" },
   { id: "reports", label: "Reports" },

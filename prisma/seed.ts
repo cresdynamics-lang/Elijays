@@ -13,7 +13,7 @@ import {
   MovementType,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { products as storefrontProducts } from "../src/lib/products";
+import { fileProducts as storefrontProducts } from "../src/lib/products";
 
 const prisma = new PrismaClient();
 

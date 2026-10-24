@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { prisma } from "@/lib/db";
@@ -74,6 +75,7 @@ export async function POST(req: NextRequest) {
         sortOrder: count,
       },
     });
+    revalidatePath("/", "layout"); // new photo shows on the storefront
   }
 
   return NextResponse.json({

@@ -1,34 +1,35 @@
 import type { Metadata } from "next";
 import { CategoryShell } from "@/components/CategoryShell";
 import { getCategoryById } from "@/lib/navigation";
-import { getProductsByCategory, products } from "@/lib/products";
+import { getCatalog } from "@/lib/catalog/store";
+import type { Catalog, Product } from "@/lib/products";
 import { notFound } from "next/navigation";
 
 type Props = { params: Promise<{ sub: string }> };
 
 const SUB_MAP: Record<
   string,
-  { filter: () => ReturnType<typeof products.filter>; label?: string }
+  { filter: (catalog: Catalog) => Product[]; label?: string }
 > = {
   belts: {
-    filter: () => getProductsByCategory("belts"),
+    filter: (c) => c.getProductsByCategory("belts"),
   },
   ties: {
-    filter: () =>
-      products.filter((p) => p.category === "ties" || p.category === "socks"),
+    filter: (c) =>
+      c.products.filter((p) => p.category === "ties" || p.category === "socks"),
   },
   socks: {
-    filter: () => getProductsByCategory("socks"),
+    filter: (c) => c.getProductsByCategory("socks"),
   },
   "gift-sets": {
-    filter: () =>
-      products.filter(
+    filter: (c) =>
+      c.products.filter(
         (p) => p.subcategory === "gift-sets" || p.giftOptions === true
       ),
   },
   corporate: {
-    filter: () =>
-      products.filter(
+    filter: (c) =>
+      c.products.filter(
         (p) => p.subcategory === "gift-sets" || p.giftOptions === true
       ),
   },
@@ -66,7 +67,7 @@ export default async function AccessoriesSubPage({ params }: Props) {
           subline: link?.descriptor || cat.page.subline,
         },
       }}
-      products={map.filter()}
+      products={map.filter(await getCatalog())}
       chips={[
         { label: "All accessories", value: "all" },
         ...cat.links

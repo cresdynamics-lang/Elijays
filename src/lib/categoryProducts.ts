@@ -1,12 +1,10 @@
 import { getCategoryById } from "@/lib/navigation";
-import {
-  getProductsByCategory,
-  products,
-  type Product,
-} from "@/lib/products";
+import type { Product } from "@/lib/products";
+import { getCatalog } from "@/lib/catalog/store";
 
 /** Map nav category ids to catalogue products */
-export function productsForNavCategory(id: string): Product[] {
+export async function productsForNavCategory(id: string): Promise<Product[]> {
+  const { getProductsByCategory, products } = await getCatalog();
   switch (id) {
     case "suits":
       return getProductsByCategory("suits");

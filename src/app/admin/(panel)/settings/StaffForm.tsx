@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import {
   createStaffAccount,
   type StaffFormState,
-} from "@/app/admin/settings/actions";
+} from "@/app/admin/(panel)/settings/actions";
 import { STAFF_PERMISSION_OPTIONS } from "@/lib/auth/permissions";
 
 const initial: StaffFormState = {};

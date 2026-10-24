@@ -3,11 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatKes } from "@/lib/constants";
-import { getProduct, looks } from "@/lib/products";
+import { looks } from "@/lib/products";
+import { useCatalog } from "@/lib/catalog/CatalogProvider";
 import { useCart } from "@/lib/cart";
 
 export default function LookbookPage() {
   const { addItem } = useCart();
+  const { getProduct } = useCatalog();
 
   const addLook = (pieces: string[]) => {
     pieces.forEach((slug) => {

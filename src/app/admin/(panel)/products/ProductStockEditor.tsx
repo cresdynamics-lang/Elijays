@@ -43,6 +43,7 @@ export function ProductStockEditor({
         name: c.name,
         imageUrl: c.imageUrl,
         uploading: false,
+        uploadError: "",
       }),
     ),
   );
@@ -78,7 +79,13 @@ export function ProductStockEditor({
   const addColour = () => {
     setColours((prev) => [
       ...prev,
-      { key: nextColourKey("new"), name: "", imageUrl: null, uploading: false },
+      {
+        key: nextColourKey("new"),
+        name: "",
+        imageUrl: null,
+        uploading: false,
+        uploadError: "",
+      },
     ]);
     setStatus("idle");
   };
@@ -94,7 +101,9 @@ export function ProductStockEditor({
     setColours((prev) => {
       const current = prev.find((c) => c.key === key);
       if (!current) return prev;
-      const next = prev.map((c) => (c.key === key ? { ...c, name } : c));
+      const next = prev.map((c) =>
+        c.key === key ? { ...c, name, uploadError: "" } : c,
+      );
       if (current.name) {
         setQty((q) => {
           const moved = { ...q };
@@ -131,13 +140,23 @@ export function ProductStockEditor({
   const uploadColour = async (key: string, file: File | null) => {
     if (!file) return;
     const colour = colours.find((c) => c.key === key);
+    // Errors show on the colour's own row; the section-level message sits by
+    // the Save button, usually off-screen while a photo is being picked.
+    const setRowError = (uploadError: string) =>
+      setColours((prev) =>
+        prev.map((c) =>
+          c.key === key ? { ...c, uploading: false, uploadError } : c,
+        ),
+      );
     if (!colour?.name.trim()) {
-      setError("Name the colour before uploading its photo");
-      setStatus("error");
+      setRowError("Type the colour name first, then upload its photo");
+      document.getElementById(`colour-name-${key}`)?.focus();
       return;
     }
     setColours((prev) =>
-      prev.map((c) => (c.key === key ? { ...c, uploading: true } : c)),
+      prev.map((c) =>
+        c.key === key ? { ...c, uploading: true, uploadError: "" } : c,
+      ),
     );
     try {
       const fd = new FormData();
@@ -156,13 +175,8 @@ export function ProductStockEditor({
         ),
       );
       setStatus("idle");
-      setError("");
     } catch (e) {
-      setColours((prev) =>
-        prev.map((c) => (c.key === key ? { ...c, uploading: false } : c)),
-      );
-      setError(e instanceof Error ? e.message : "Upload failed");
-      setStatus("error");
+      setRowError(e instanceof Error ? e.message : "Upload failed");
     }
   };
 
@@ -254,6 +268,7 @@ export function ProductStockEditor({
                 )}
               </div>
               <input
+                id={`colour-name-${colour.key}`}
                 value={colour.name}
                 onChange={(e) => renameColour(colour.key, e.target.value)}
                 placeholder="Navy"
@@ -279,6 +294,11 @@ export function ProductStockEditor({
               >
                 Remove
               </button>
+              {colour.uploadError ? (
+                <p role="alert" className="basis-full text-xs text-red-300">
+                  {colour.uploadError}
+                </p>
+              ) : null}
             </li>
           ))}
         </ul>

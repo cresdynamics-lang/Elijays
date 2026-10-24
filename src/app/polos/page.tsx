@@ -11,12 +11,12 @@ export const metadata: Metadata = {
   description: cat?.page.intro,
 };
 
-export default function PolosPage() {
+export default async function PolosPage() {
   if (!cat) notFound();
   return (
     <CategoryShell
       category={cat}
-      products={productsForNavCategory("polos")}
+      products={await productsForNavCategory("polos")}
       chips={chipsFromCategory("polos")}
       filterLabels={["Size", "Colour", "Fit", "Price"]}
     />

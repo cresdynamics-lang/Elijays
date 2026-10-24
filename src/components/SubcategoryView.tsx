@@ -24,14 +24,15 @@ export function subcategoryMetadata(
   };
 }
 
-export function SubcategoryView({ categoryId, sub }: Props) {
+export async function SubcategoryView({ categoryId, sub }: Props) {
   const cat = getCategoryById(categoryId);
   if (!cat) notFound();
 
   const link = cat.links.find((l) => l.href.endsWith(`/${sub}`));
   if (!link || link.href === cat.slug) notFound();
 
-  const products = productsForNavCategory(categoryId).filter(
+  const all = await productsForNavCategory(categoryId);
+  const products = all.filter(
     (p) =>
       p.subcategory === sub ||
       p.subcategory.replace(/_/g, "-") === sub ||
@@ -51,7 +52,7 @@ export function SubcategoryView({ categoryId, sub }: Props) {
   return (
     <CategoryShell
       category={pageCat}
-      products={products.length ? products : productsForNavCategory(categoryId)}
+      products={products.length ? products : all}
       chips={chipsFromCategory(categoryId)}
       activeChip={sub}
     />

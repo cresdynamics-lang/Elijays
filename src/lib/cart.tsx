@@ -9,7 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getProduct, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
+import { useCatalog } from "@/lib/catalog/CatalogProvider";
 
 export type CartItem = {
   slug: string;
@@ -37,6 +38,7 @@ const CART_KEY = "elijays-bag";
 const WISH_KEY = "elijays-wishlist";
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { getProduct } = useCatalog();
   const [items, setItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
@@ -109,7 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           return product ? { product, item } : null;
         })
         .filter(Boolean) as { product: Product; item: CartItem }[],
-    [items]
+    [items, getProduct]
   );
 
   const count = items.reduce((n, i) => n + i.qty, 0);

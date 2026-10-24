@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { OrderStatus } from "@prisma/client";
-import { updateOrderStatus } from "@/app/admin/orders/actions";
+import { updateOrderStatus } from "@/app/admin/(panel)/orders/actions";
 
 const NEXT: Partial<Record<OrderStatus, OrderStatus>> = {
   NEW: OrderStatus.PAID,

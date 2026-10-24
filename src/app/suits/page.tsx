@@ -11,12 +11,12 @@ export const metadata: Metadata = {
   description: cat?.page.intro,
 };
 
-export default function SuitsPage() {
+export default async function SuitsPage() {
   if (!cat) notFound();
   return (
     <CategoryShell
       category={cat}
-      products={productsForNavCategory("suits")}
+      products={await productsForNavCategory("suits")}
       chips={chipsFromCategory("suits")}
       filterLabels={["Size", "Colour", "Fabric", "Fit", "Occasion", "Price"]}
       bespokeCard

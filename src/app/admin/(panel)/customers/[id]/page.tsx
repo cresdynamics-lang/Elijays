@@ -85,13 +85,6 @@ export default async function CustomerDetailPage({
                 disabled
                 className="rounded-full border border-line px-4 py-2 text-xs text-ivory-muted"
               >
-                Book fitting
-              </button>
-              <button
-                type="button"
-                disabled
-                className="rounded-full border border-line px-4 py-2 text-xs text-ivory-muted"
-              >
                 WhatsApp
               </button>
             </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { ProductThumb } from "@/components/admin/ProductThumb";
 import { ProductStatus } from "@prisma/client";
 import { PageHeader, TabRow } from "@/components/admin/PageHeader";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -56,6 +57,13 @@ export default async function ProductsPage({
     orderBy: { updatedAt: "desc" },
     include: {
       category: true,
+      // Same display photo the storefront uses: first live image by sort order.
+      images: {
+        where: { deletedAt: null },
+        include: { media: true },
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+      },
       variants: {
         where: { deletedAt: null },
         include: { stockLevels: { where: { deletedAt: null } } },
@@ -103,15 +111,23 @@ export default async function ProductsPage({
               return (
                 <tr key={p.id}>
                   <Td>
-                    <Link
-                      href={`/admin/products/${p.id}`}
-                      className="font-medium text-ivory hover:text-gold"
-                    >
-                      {p.name}
-                    </Link>
-                    {p.shortLine ? (
-                      <p className="mt-0.5 text-xs text-ivory-faint">{p.shortLine}</p>
-                    ) : null}
+                    <div className="flex items-center gap-3">
+                      <ProductThumb
+                        href={`/admin/products/${p.id}`}
+                        src={p.images[0]?.media.url}
+                      />
+                      <div className="min-w-0">
+                        <Link
+                          href={`/admin/products/${p.id}`}
+                          className="font-medium text-ivory hover:text-gold"
+                        >
+                          {p.name}
+                        </Link>
+                        {p.shortLine ? (
+                          <p className="mt-0.5 text-xs text-ivory-faint">{p.shortLine}</p>
+                        ) : null}
+                      </div>
+                    </div>
                   </Td>
                   <Td>{p.sku}</Td>
                   <Td>{p.category?.name ?? "—"}</Td>

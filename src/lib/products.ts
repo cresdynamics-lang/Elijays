@@ -35,7 +35,13 @@ export type Product = {
   giftOptions?: boolean;
 };
 
-export const products: Product[] = [
+/**
+ * Original hand-written catalogue. The storefront now reads products from the
+ * database (see lib/catalog/store.ts); this list supplies details the database
+ * doesn't hold (subcategory, pairsWith, gift options…) and is the fallback when
+ * the database is unreachable or empty.
+ */
+export const fileProducts: Product[] = [
   // ——— SUITS ———
   {
     id: "s1",
@@ -1254,54 +1260,62 @@ export const shirtFamilies = [
   },
 ];
 
-export function getProduct(slug: string): Product | undefined {
-  return products.find((p) => p.slug === slug);
+/** Lookup helpers over one product list (database-backed or the file). */
+export function createCatalog(products: Product[]) {
+  const bySlug = new Map(products.map((p) => [p.slug, p]));
+
+  return {
+    products,
+
+    getProduct(slug: string): Product | undefined {
+      return bySlug.get(slug);
+    },
+
+    getProductsByCategory(category: Category): Product[] {
+      return products.filter((p) => p.category === category);
+    },
+
+    getProductsBySubcategory(category: Category, subcategory: string): Product[] {
+      return products.filter(
+        (p) => p.category === category && p.subcategory === subcategory
+      );
+    },
+
+    getNewArrivals(limit = 4): Product[] {
+      const windowMs = 21 * 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      return products
+        .filter((p) => {
+          if (!p.updatedAt) return false;
+          const t = new Date(p.updatedAt).getTime();
+          return !Number.isNaN(t) && now - t <= windowMs;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.updatedAt!).getTime() - new Date(a.updatedAt!).getTime()
+        )
+        .slice(0, limit);
+    },
+
+    /** Sale page = bestsellers only */
+    getBestsellers(limit?: number): Product[] {
+      const list = products.filter((p) => p.isBestseller);
+      return typeof limit === "number" ? list.slice(0, limit) : list;
+    },
+
+    searchProducts(query: string): Product[] {
+      const q = query.toLowerCase().trim();
+      if (!q) return [];
+      return products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.subtitle.toLowerCase().includes(q) ||
+          p.category.includes(q) ||
+          p.subcategory.includes(q) ||
+          p.fabric?.toLowerCase().includes(q)
+      );
+    },
+  };
 }
 
-export function getProductsByCategory(category: Category): Product[] {
-  return products.filter((p) => p.category === category);
-}
-
-export function getProductsBySubcategory(
-  category: Category,
-  subcategory: string
-): Product[] {
-  return products.filter(
-    (p) => p.category === category && p.subcategory === subcategory
-  );
-}
-
-export function getNewArrivals(limit = 4): Product[] {
-  const windowMs = 21 * 24 * 60 * 60 * 1000;
-  const now = Date.now();
-  return products
-    .filter((p) => {
-      if (!p.updatedAt) return false;
-      const t = new Date(p.updatedAt).getTime();
-      return !Number.isNaN(t) && now - t <= windowMs;
-    })
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt!).getTime() - new Date(a.updatedAt!).getTime()
-    )
-    .slice(0, limit);
-}
-
-/** Sale page = bestsellers only */
-export function getBestsellers(limit?: number): Product[] {
-  const list = products.filter((p) => p.isBestseller);
-  return typeof limit === "number" ? list.slice(0, limit) : list;
-}
-
-export function searchProducts(query: string): Product[] {
-  const q = query.toLowerCase().trim();
-  if (!q) return [];
-  return products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(q) ||
-      p.subtitle.toLowerCase().includes(q) ||
-      p.category.includes(q) ||
-      p.subcategory.includes(q) ||
-      p.fabric?.toLowerCase().includes(q)
-  );
-}
+export type Catalog = ReturnType<typeof createCatalog>;

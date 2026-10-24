@@ -3,11 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatKes } from "@/lib/constants";
-import { getProduct } from "@/lib/products";
+import { useCatalog } from "@/lib/catalog/CatalogProvider";
 import { useCart } from "@/lib/cart";
 
 export default function WishlistPage() {
   const { wishlist, toggleWishlist } = useCart();
+  const { getProduct } = useCatalog();
   const items = wishlist.map((s) => getProduct(s)).filter(Boolean);
 
   return (

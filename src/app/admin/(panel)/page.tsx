@@ -25,7 +25,6 @@ export default async function AdminDashboardPage() {
   const kpis = [
     { label: "Sales today", value: formatKes(data.salesTodayKes) },
     { label: "Orders waiting", value: String(data.ordersWaiting) },
-    { label: "Fittings today", value: String(data.fittingsToday) },
     { label: "Low stock", value: String(data.lowStock) },
     { label: "Abandoned", value: String(data.abandonedLeads) },
   ];
@@ -39,7 +38,7 @@ export default async function AdminDashboardPage() {
         actionLabel="+ New product"
       />
 
-      <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k) => {
           const href = k.label === "Low stock" ? "/admin/stock" : null;
           const inner = (
@@ -127,26 +126,6 @@ export default async function AdminDashboardPage() {
             )}
           </ul>
 
-          <h2 className="mb-4 mt-8 font-display text-lg text-ivory">
-            Today&apos;s fittings
-          </h2>
-          <ul className="space-y-3 rounded-xl border border-line bg-noir-soft/40 p-4">
-            {data.todayAppointments.length === 0 ? (
-              <li className="text-sm text-ivory-faint">No fittings scheduled.</li>
-            ) : (
-              data.todayAppointments.map((a) => (
-                <li key={a.id} className="text-sm">
-                  <p className="text-ivory">{a.title}</p>
-                  <p className="text-ivory-faint">
-                    {format(a.startsAt, "HH:mm")}
-                    {a.customer
-                      ? ` · ${a.customer.firstName} ${a.customer.lastName}`
-                      : ""}
-                  </p>
-                </li>
-              ))
-            )}
-          </ul>
         </section>
       </div>
 

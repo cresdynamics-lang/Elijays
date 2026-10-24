@@ -12,9 +12,6 @@ export function middleware(request: NextRequest) {
   if (isAdmin) {
     requestHeaders.set("x-admin", "1");
   }
-  if (pathname === "/admin/login") {
-    requestHeaders.set("x-admin-login", "1");
-  }
 
   if (isAdmin && pathname !== "/admin/login") {
     const token = request.cookies.get(SESSION_COOKIE)?.value;

@@ -11,12 +11,12 @@ export const metadata: Metadata = {
   description: cat?.page.intro,
 };
 
-export default function TrousersPage() {
+export default async function TrousersPage() {
   if (!cat) notFound();
   return (
     <CategoryShell
       category={cat}
-      products={productsForNavCategory("trousers")}
+      products={await productsForNavCategory("trousers")}
       chips={chipsFromCategory("trousers")}
       filterLabels={["Waist", "Length", "Colour", "Fit", "Price"]}
     />

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { searchProducts } from "@/lib/products";
+import { useCatalog } from "@/lib/catalog/CatalogProvider";
 
 export function SearchOverlay({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState("");
+  const { searchProducts } = useCatalog();
   const [results, setResults] = useState<
     { slug: string; name: string; subtitle: string }[]
   >([]);
@@ -32,7 +33,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
           subtitle: p.subtitle,
         }))
     );
-  }, [q]);
+  }, [q, searchProducts]);
 
   return (
     <div className="fixed inset-0 z-[70] flex flex-col items-center bg-noir/95 px-6 pt-28 backdrop-blur-md">

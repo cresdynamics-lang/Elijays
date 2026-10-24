@@ -5,7 +5,8 @@ import Link from "next/link";
 import { BRAND, TRUST_STRIP, formatKes, whatsappFittingUrl } from "@/lib/constants";
 import { getEnabledCategories } from "@/lib/navigation";
 import { CategoryCard } from "@/components/CategoryCard";
-import { completeLook, getNewArrivals, getProduct, looks } from "@/lib/products";
+import { completeLook, looks } from "@/lib/products";
+import { useCatalog } from "@/lib/catalog/CatalogProvider";
 import { useCart } from "@/lib/cart";
 
 const HERO_MODEL = {
@@ -40,6 +41,7 @@ const QUOTES = [
 
 export default function HomePage() {
   const { addItem } = useCart();
+  const { getNewArrivals, getProduct } = useCatalog();
   const arrivals = getNewArrivals(4);
   const wardrobe = getEnabledCategories();
 

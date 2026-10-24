@@ -1,6 +1,6 @@
 "use client";
 
-import { logoutAction } from "@/app/admin/logout/actions";
+import { logoutAction } from "@/app/admin/(panel)/logout/actions";
 
 export function LogoutButton() {
   return (

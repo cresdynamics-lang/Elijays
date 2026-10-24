@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import {
-  AppointmentStatus,
   OrderStatus,
   ProductStatus,
 } from "@prisma/client";
@@ -22,11 +21,9 @@ export async function getDashboardData(userName: string) {
     paymentsToday,
     ordersPaidToday,
     ordersWaiting,
-    fittingsToday,
     ordersToAction,
     abandonedLeads,
     lowStockProducts,
-    todayAppointments,
     bestsellers,
     publishedCount,
   ] = await Promise.all([
@@ -61,13 +58,6 @@ export async function getDashboardData(userName: string) {
         status: { in: waitingStatuses },
       },
     }),
-    prisma.appointment.count({
-      where: {
-        deletedAt: null,
-        startsAt: { gte: dayStart, lte: dayEnd },
-        status: { in: [AppointmentStatus.CONFIRMED, AppointmentStatus.REQUESTED] },
-      },
-    }),
     prisma.order.findMany({
       where: {
         deletedAt: null,
@@ -87,14 +77,6 @@ export async function getDashboardData(userName: string) {
       },
       take: 5,
       orderBy: { updatedAt: "desc" },
-    }),
-    prisma.appointment.findMany({
-      where: {
-        deletedAt: null,
-        startsAt: { gte: dayStart, lte: dayEnd },
-      },
-      orderBy: { startsAt: "asc" },
-      include: { customer: true },
     }),
     prisma.product.findMany({
       where: { deletedAt: null, isBestseller: true, status: ProductStatus.PUBLISHED },
@@ -137,14 +119,12 @@ export async function getDashboardData(userName: string) {
     userName,
     salesTodayKes,
     ordersWaiting,
-    fittingsToday,
     lowStock,
     newMessages: 0,
     abandonedLeads,
     publishedCount,
     ordersToAction,
     attention,
-    todayAppointments,
     bestsellers,
     generatedAt: now.toISOString(),
   };
