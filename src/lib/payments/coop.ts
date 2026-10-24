@@ -91,6 +91,11 @@ export function normalizePhone(raw: string): string {
   throw new Error("Enter a valid Kenyan phone (e.g. 07XX XXX XXX)");
 }
 
+// Co-op's API sits behind Akamai, which stalls or rejects requests that claim to
+// be Postman from a non-Postman client: token calls hung until our timeout
+// ("operation was aborted"). Identify honestly instead.
+const COOP_USER_AGENT = "ELIJAYS-Payments/1.0";
+
 let cachedToken: { value: string; expiresAt: number } | null = null;
 
 async function getAccessToken() {
@@ -115,7 +120,7 @@ async function getAccessToken() {
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/x-www-form-urlencoded",
       Accept: "application/json",
-      "User-Agent": "PostmanRuntime/7.43.0",
+      "User-Agent": COOP_USER_AGENT,
     },
     body: "grant_type=client_credentials",
     signal: AbortSignal.timeout(15_000),
@@ -143,7 +148,7 @@ function authHeaders(token: string) {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
     Accept: "application/json",
-    "User-Agent": "PostmanRuntime/7.43.0",
+    "User-Agent": COOP_USER_AGENT,
   };
   if (cfg.apiKey) headers.api_key = cfg.apiKey;
   return headers;
