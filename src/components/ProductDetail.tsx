@@ -246,13 +246,13 @@ export function ProductDetail({ product }: { product: Product }) {
           <section className="mt-24 md:mt-32">
             <p className="eyebrow">Complete the look</p>
             <h2 className="display text-3xl md:text-4xl mt-3 mb-10">Tie · Belt · Chino</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 sm:gap-8">
               {pairs.map((p) => (
                 <Link key={p.slug} href={`/product/${p.slug}`} className="group">
                   <div className="relative aspect-[3/4] overflow-hidden">
                     <Image src={p.image} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                   </div>
-                  <p className="display text-xl mt-4 group-hover:text-gold transition-colors">{p.name}</p>
+                  <p className="display text-base sm:text-xl mt-3 sm:mt-4 group-hover:text-gold transition-colors">{p.name}</p>
                   <p className="text-gold text-sm mt-1">{formatKes(p.price)}</p>
                 </Link>
               ))}

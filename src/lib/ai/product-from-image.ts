@@ -72,7 +72,7 @@ Return ONLY valid JSON with keys: name, shortLine, description, seoTitle, seoDes
     ? `Product photo for ELIJAYS. Merchant hint: ${hint}`
     : "Product photo for ELIJAYS. Infer the garment accurately from the image.";
 
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const request = () => fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -81,7 +81,10 @@ Return ONLY valid JSON with keys: name, shortLine, description, seoTitle, seoDes
     body: JSON.stringify({
       model,
       temperature: 0.55,
-      max_completion_tokens: 1024,
+      // A full product write-up is ~300 tokens. Groq counts the requested
+      // maximum against the account's output-tokens-per-minute limit (1000 on
+      // our plan), so asking for 1024 was rejected outright.
+      max_completion_tokens: 600,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: system },
@@ -98,6 +101,17 @@ Return ONLY valid JSON with keys: name, shortLine, description, seoTitle, seoDes
       ],
     }),
   });
+
+  let res = await request();
+  if (res.status === 429) {
+    // Per-minute limit hit: wait as Groq asks (capped), then try once more.
+    const wait = Math.min(Number(res.headers.get("retry-after")) || 5, 15);
+    await new Promise((r) => setTimeout(r, wait * 1000));
+    res = await request();
+  }
+  if (res.status === 429) {
+    throw new Error("The AI is busy right now. Try again in a minute.");
+  }
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");

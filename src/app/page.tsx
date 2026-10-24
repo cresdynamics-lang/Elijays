@@ -138,7 +138,7 @@ export default function HomePage() {
               Shop everything →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:grid-cols-3">
             {wardrobe.map((w, i) => (
               <CategoryCard
                 key={w.slug}
@@ -200,7 +200,7 @@ export default function HomePage() {
               All new arrivals →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-6 lg:grid-cols-4">
             {arrivals.map((p) => (
               <Link key={p.id} href={`/product/${p.slug}`} className="group">
                 <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-noir-elevated">
@@ -208,7 +208,7 @@ export default function HomePage() {
                     src={p.image}
                     alt={p.name}
                     fill
-                    sizes="25vw"
+                    sizes="(max-width:1024px) 50vw, 25vw"
                     quality={65}
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />

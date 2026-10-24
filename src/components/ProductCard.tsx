@@ -20,16 +20,16 @@ export function ProductCard({ product }: { product: Product }) {
             src={product.image}
             alt={product.name}
             fill
-            sizes="(max-width:768px) 90vw, (max-width:1200px) 45vw, 28vw"
+            sizes="(max-width:640px) 50vw, (max-width:1200px) 45vw, 28vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-noir/50 via-transparent to-transparent opacity-80" />
           {tags.length > 0 && (
-            <div className="absolute top-4 left-4 flex flex-col gap-2">
+            <div className="absolute left-2 top-2 flex flex-col gap-1.5 sm:left-4 sm:top-4 sm:gap-2">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className={`rounded-md px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.18em] ${
+                  className={`rounded-md px-1.5 py-0.5 text-[0.5rem] uppercase tracking-[0.14em] sm:px-2.5 sm:py-1 sm:text-[0.6rem] sm:tracking-[0.18em] ${
                     tag === "new"
                       ? "bg-gold/90 text-noir"
                       : tag === "bespoke"
@@ -43,20 +43,20 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
           )}
         </div>
-        <div className="pt-5 pb-2">
-          <h3 className="display text-xl text-ivory transition-colors group-hover:text-gold md:text-2xl">
+        <div className="pb-2 pt-3 sm:pt-5">
+          <h3 className="display text-base leading-snug text-ivory transition-colors group-hover:text-gold sm:text-xl md:text-2xl">
             {product.name}
           </h3>
-          <p className="mt-1.5 text-[0.65rem] uppercase tracking-[0.18em] text-ivory/45">
+          <p className="mt-1 line-clamp-2 text-[0.55rem] uppercase tracking-[0.14em] text-ivory/45 sm:mt-1.5 sm:text-[0.65rem] sm:tracking-[0.18em]">
             {product.subtitle}
           </p>
-          <p className="mt-3 text-sm text-gold">{formatKes(product.price)}</p>
+          <p className="mt-2 text-sm text-gold sm:mt-3">{formatKes(product.price)}</p>
         </div>
       </Link>
       <button
         type="button"
         onClick={() => toggleWishlist(product.slug)}
-        className="absolute top-4 right-4 rounded-md bg-noir/50 px-2 py-1 text-[0.6rem] uppercase tracking-[0.15em] text-ivory/70 hover:text-gold"
+        className="absolute right-2 top-2 rounded-md bg-noir/50 px-1.5 py-0.5 text-[0.5rem] uppercase tracking-[0.12em] text-ivory/70 hover:text-gold sm:right-4 sm:top-4 sm:px-2 sm:py-1 sm:text-[0.6rem] sm:tracking-[0.15em]"
         aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
       >
         {wished ? "Saved" : "Save"}

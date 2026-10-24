@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/session";
 import { userCan } from "@/lib/auth/permissions";
 import { writeAudit } from "@/lib/admin/audit";
+import { publishIfReady } from "@/lib/admin/publish";
 
 function slugify(s: string) {
   return s
@@ -70,6 +71,10 @@ export async function updateProduct(id: string, formData: FormData) {
   const description = String(formData.get("description") || "").trim() || null;
   const priceKes = Number(formData.get("priceKes") || before.priceKes);
   const status = String(formData.get("status") || before.status) as ProductStatus;
+  // Absent from the form (e.g. older clients) means "leave as is".
+  const categoryId = formData.has("categoryId")
+    ? String(formData.get("categoryId") || "") || null
+    : before.categoryId;
 
   const updated = await prisma.product.update({
     where: { id },
@@ -79,6 +84,7 @@ export async function updateProduct(id: string, formData: FormData) {
       description,
       priceKes,
       status,
+      categoryId,
       publishedAt:
         status === ProductStatus.PUBLISHED
           ? before.publishedAt ?? new Date()
@@ -95,6 +101,7 @@ export async function updateProduct(id: string, formData: FormData) {
     before: { name: before.name, priceKes: before.priceKes, status: before.status },
     after: { name, priceKes, status },
   });
+  await publishIfReady(id, user.id);
 
   revalidatePath("/admin/products");
   revalidatePath("/", "layout"); // storefront reads products from the database
@@ -142,6 +149,7 @@ export async function autosaveProduct(input: {
         publishedAt: input.publish ? new Date() : undefined,
       },
     });
+    await publishIfReady(updated.id, user.id);
     revalidatePath("/admin/products");
     revalidatePath("/", "layout"); // storefront reads products from the database
     return { id: updated.id };
@@ -170,6 +178,7 @@ export async function autosaveProduct(input: {
     entityId: created.id,
     entityLabel: created.name,
   });
+  await publishIfReady(created.id, user.id);
 
   revalidatePath("/admin/products");
   revalidatePath("/", "layout"); // storefront reads products from the database

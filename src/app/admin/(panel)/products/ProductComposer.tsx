@@ -31,14 +31,20 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
     seoDescription: "",
   });
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Saves run from timers and async upload/AI callbacks that hold stale
+  // renders, so the product id lives in a ref, and the first save's create is
+  // shared: saves that start while it's in flight wait for its id instead of
+  // each creating another product.
+  const idRef = useRef<string | null>(null);
+  const creating = useRef<Promise<string> | null>(null);
 
   const save = useCallback(
     async (next = form, publish = false) => {
-      if (!next.name.trim() && !next.sku.trim()) return;
+      if (!next.name.trim() && !next.sku.trim()) return idRef.current;
       setStatus("saving");
       try {
-        const res = await autosaveProduct({
-          id: productId,
+        if (!idRef.current && creating.current) await creating.current;
+        const fields = {
           name: next.name || "Untitled product",
           sku: next.sku,
           categoryId: next.categoryId || null,
@@ -48,19 +54,31 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
           seoTitle: next.seoTitle,
           seoDescription: next.seoDescription,
           publish,
-        });
-        if (res.id && !productId) setProductId(res.id);
-        setStatus("saved");
-        if (publish && res.id) {
-          router.push(`/admin/products/${res.id}`);
+        };
+        let id = idRef.current;
+        if (id) {
+          await autosaveProduct({ id, ...fields });
+        } else {
+          creating.current = autosaveProduct({ id: null, ...fields }).then(
+            (res) => res.id as string,
+          );
+          try {
+            id = await creating.current;
+          } finally {
+            creating.current = null;
+          }
+          idRef.current = id;
+          setProductId(id);
         }
-        return res.id as string;
+        setStatus("saved");
+        if (publish) router.push(`/admin/products/${id}`);
+        return id;
       } catch {
         setStatus("error");
-        return productId;
+        return idRef.current;
       }
     },
-    [form, productId, router],
+    [form, router],
   );
 
   const onChange = (key: keyof typeof form, value: string) => {
@@ -78,7 +96,7 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
     const flush = () => {
       if (form.name.trim() || form.sku.trim()) {
         void autosaveProduct({
-          id: productId,
+          id: idRef.current,
           name: form.name || "Untitled product",
           sku: form.sku,
           categoryId: form.categoryId || null,
@@ -96,7 +114,7 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
       window.removeEventListener("pagehide", flush);
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [form, productId]);
+  }, [form]);
 
   const findCategoryId = (suggested?: string) => {
     if (!suggested) return "";
@@ -118,7 +136,7 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
 
     try {
       // Ensure draft exists so we can attach the image
-      let id = productId;
+      let id = idRef.current;
       if (!id) {
         id =
           (await save(
@@ -141,7 +159,6 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
       const upJson = await up.json();
       if (!up.ok) throw new Error(upJson.error || "Upload failed");
       setUploadedUrl(upJson.url);
-      if (upJson.productId || id) setProductId(id);
 
       setAiStatus("reading");
       const aiFd = new FormData();
@@ -226,7 +243,7 @@ export function ProductComposer({ categories }: { categories: Cat[] }) {
             ? "Saving…"
             : status === "saved"
               ? productId
-                ? "Saved — stays as in-progress until you publish"
+                ? "Saved — goes live once it has a name, price, category and photo"
                 : "Saved"
               : status === "error"
                 ? "Could not save"

@@ -20,6 +20,11 @@ export default async function ProductEditPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const categories = await prisma.category.findMany({
+    where: { deletedAt: null, parentId: null },
+    orderBy: { sortOrder: "asc" },
+    select: { id: true, name: true },
+  });
   const product = await prisma.product.findFirst({
     where: { id, deletedAt: null },
     include: {
@@ -148,8 +153,28 @@ export default async function ProductEditPage({
                   className="mt-1 w-full rounded-lg border border-line bg-noir px-3 py-2 text-ivory"
                 />
               </label>
+              <label className="block text-sm">
+                <span className="text-[11px] uppercase tracking-widest text-ivory-faint">
+                  Category
+                </span>
+                <select
+                  name="categoryId"
+                  defaultValue={product.categoryId ?? ""}
+                  className="mt-1 w-full rounded-lg border border-line bg-noir px-3 py-2 text-ivory"
+                >
+                  <option value="">Select category</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <p className="text-xs text-ivory-faint">
-                Category: {product.category?.name ?? "—"} · SKU {product.sku}
+                SKU {product.sku}
+                {product.status === "DRAFT" && !product.publishedAt
+                  ? " · Goes live on its own once it has a name, price, category and photo"
+                  : ""}
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
                 <SaveButton className="rounded-full border border-gold/40 bg-gold/10 px-5 py-2 text-xs uppercase tracking-widest text-gold">

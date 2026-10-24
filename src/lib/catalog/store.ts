@@ -26,12 +26,27 @@ const CATEGORY_FROM_DB: Record<string, Category> = {
   jeans: "jeans",
 };
 
+// Name keywords, checked in order, for products saved without a category.
+const CATEGORY_FROM_NAME: [RegExp, Category][] = [
+  [/\btie/i, "ties"],
+  [/\bsock/i, "socks"],
+  [/\bbelt/i, "belts"],
+  [/\b(suit|tuxedo|blazer|two-piece|three-piece)/i, "suits"],
+  [/\b(jacket|coat|vest|gilet|parka|bomber|biker)/i, "jackets"],
+  [/\b(sweater|knit|cardigan|pullover|jumper|hoodie|sweatshirt)/i, "sweaters"],
+  [/\b(jean|denim)/i, "jeans"],
+  [/\b(trouser|chino|khaki|pant|slack)/i, "trousers"],
+  [/\b(shirt|polo|oxford|tee|t-shirt|button-down)/i, "shirts"],
+];
+
 function storefrontCategory(dbSlug: string | undefined, name: string): Category {
   if (dbSlug && CATEGORY_FROM_DB[dbSlug]) return CATEGORY_FROM_DB[dbSlug];
+  const byName = CATEGORY_FROM_NAME.find(([re]) => re.test(name))?.[1];
   // Accessories are one category in the database but three on the site.
-  if (/\btie/i.test(name)) return "ties";
-  if (/\bsock/i.test(name)) return "socks";
-  return "belts";
+  if (dbSlug === "accessories") {
+    return byName === "ties" || byName === "socks" ? byName : "belts";
+  }
+  return byName ?? "shirts";
 }
 
 function unique(values: (string | null | undefined)[]) {

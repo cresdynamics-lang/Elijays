@@ -158,7 +158,7 @@ export function CategoryShell({
           </aside>
 
           <div className="flex-1">
-            <div className="grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-8 sm:gap-y-14 xl:grid-cols-3">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -167,16 +167,16 @@ export function CategoryShell({
                   href={whatsappFittingUrl()}
                   target="_blank"
                   rel="noreferrer"
-                  className="group relative flex min-h-[420px] aspect-[3/4] flex-col justify-end overflow-hidden border border-[var(--line)] bg-gradient-to-br from-purple/20 via-noir-elevated to-noir p-8"
+                  className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-xl border border-[var(--line)] bg-gradient-to-br from-purple/20 via-noir-elevated to-noir p-4 sm:min-h-[420px] sm:p-8"
                 >
                   <p className="eyebrow relative">Bespoke</p>
-                  <h3 className="display relative mt-3 text-3xl text-ivory transition-colors group-hover:text-gold md:text-4xl">
+                  <h3 className="display relative mt-2 text-xl text-ivory transition-colors group-hover:text-gold sm:mt-3 sm:text-3xl md:text-4xl">
                     Not seeing it?
                   </h3>
-                  <p className="whisper relative mt-3 text-lg">
+                  <p className="whisper relative mt-2 text-sm sm:mt-3 sm:text-lg">
                     Have it made for you.
                   </p>
-                  <span className="btn-gold relative mt-8 w-fit">
+                  <span className="btn-gold relative mt-4 w-fit sm:mt-8">
                     Book a fitting
                   </span>
                 </a>

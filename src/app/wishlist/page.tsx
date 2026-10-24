@@ -18,15 +18,15 @@ export default function WishlistPage() {
         {items.length === 0 ? (
           <p className="whisper text-xl mt-6">Nothing saved yet.</p>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-12">
+          <div className="mt-12 grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-10 lg:grid-cols-3">
             {items.map(
               (p) =>
                 p && (
                   <div key={p.slug}>
                     <Link href={`/product/${p.slug}`} className="relative block aspect-[3/4] overflow-hidden">
-                      <Image src={p.image} alt={p.name} fill className="object-cover" />
+                      <Image src={p.image} alt={p.name} fill sizes="(max-width:640px) 50vw, 33vw" className="object-cover" />
                     </Link>
-                    <h2 className="display text-xl mt-4">{p.name}</h2>
+                    <h2 className="display mt-3 text-base sm:mt-4 sm:text-xl">{p.name}</h2>
                     <p className="text-gold text-sm mt-1">{formatKes(p.price)}</p>
                     <button
                       type="button"

@@ -116,7 +116,7 @@ export function CategoryPage({
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-14">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-8 sm:gap-y-14 xl:grid-cols-3">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -125,15 +125,15 @@ export function CategoryPage({
                   href={whatsappFittingUrl()}
                   target="_blank"
                   rel="noreferrer"
-                  className="relative aspect-[3/4] min-h-[420px] flex flex-col justify-end p-8 border border-[var(--line)] bg-gradient-to-br from-purple/20 via-noir-elevated to-noir overflow-hidden group"
+                  className="relative aspect-[3/4] flex flex-col justify-end rounded-xl p-4 sm:min-h-[420px] sm:p-8 border border-[var(--line)] bg-gradient-to-br from-purple/20 via-noir-elevated to-noir overflow-hidden group"
                 >
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(232,206,150,0.12),transparent_50%)]" />
                   <p className="eyebrow relative">Bespoke</p>
-                  <h3 className="display text-3xl md:text-4xl text-ivory mt-3 relative group-hover:text-gold transition-colors">
+                  <h3 className="display text-xl sm:text-3xl md:text-4xl text-ivory mt-2 sm:mt-3 relative group-hover:text-gold transition-colors">
                     Not seeing it?
                   </h3>
-                  <p className="whisper text-lg mt-3 relative">Have it made for you.</p>
-                  <span className="btn-gold mt-8 w-fit relative">Book a fitting</span>
+                  <p className="whisper text-sm sm:text-lg mt-2 sm:mt-3 relative">Have it made for you.</p>
+                  <span className="btn-gold mt-4 sm:mt-8 w-fit relative">Book a fitting</span>
                 </a>
               )}
             </div>
